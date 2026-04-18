@@ -193,28 +193,13 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Check artifact availability
-        id: check
-        run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            "https://repo1.maven.org/maven2/io/github/rpothin/powerplatform/${{ env.SDK_VERSION }}/powerplatform-${{ env.SDK_VERSION }}.pom")
-          if [ "$STATUS" = "200" ]; then
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "::warning::Java artifact not available on Maven Central (HTTP $STATUS) — skipping build"
-            echo "available=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Build
-        if: steps.check.outputs.available == 'true'
         run: gradle compileJava -PsdkVersion="${{ env.SDK_VERSION }}"
 
       - name: Install Pulumi CLI
-        if: steps.check.outputs.available == 'true'
         uses: pulumi/actions@v6
         with:
           pulumi-version: "latest"
 
       - name: Install provider plugin
-        if: steps.check.outputs.available == 'true'
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"

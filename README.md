@@ -58,6 +58,5 @@ gradle compileJava
 ## Notes
 
 - **No real deployments** — These tests only install, compile, and optionally preview. They never run `pulumi up`.
-- **Go SDK** — Requires a `go.mod` to exist in the upstream provider's `sdk/go/powerplatform` directory. The CI job skips if the module isn't available.
-- **Java SDK** — Requires the artifact to be published on Maven Central. The CI job skips if not available.
+- **Go SDK** — Requires a `go.mod` to exist in the upstream provider's `sdk/go/powerplatform` directory. The CI job skips if the module isn't available. See below for details.
 - **Preview** — Only runs when Power Platform credentials are configured as repository secrets (`POWER_PLATFORM_CLIENT_ID`, `POWER_PLATFORM_CLIENT_SECRET`, `POWER_PLATFORM_TENANT_ID`).
