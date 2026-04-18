@@ -21,6 +21,9 @@ jobs:
   python:
     name: "Python SDK"
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     defaults:
       run:
         working-directory: python
@@ -48,12 +51,16 @@ jobs:
       - name: Install provider plugin
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
 
+      - name: Azure login (OIDC)
+        if: vars.AZURE_CLIENT_ID != ''
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
       - name: Preview (optional)
-        if: env.POWER_PLATFORM_CLIENT_ID != ''
-        env:
-          POWER_PLATFORM_CLIENT_ID: ${{ secrets.POWER_PLATFORM_CLIENT_ID }}
-          POWER_PLATFORM_CLIENT_SECRET: ${{ secrets.POWER_PLATFORM_CLIENT_SECRET }}
-          POWER_PLATFORM_TENANT_ID: ${{ secrets.POWER_PLATFORM_TENANT_ID }}
+        if: vars.AZURE_CLIENT_ID != ''
         run: |
           pulumi stack init dev --non-interactive
           pulumi preview --non-interactive --stack dev
@@ -61,6 +68,9 @@ jobs:
   typescript:
     name: "TypeScript SDK"
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     defaults:
       run:
         working-directory: typescript
@@ -87,12 +97,16 @@ jobs:
       - name: Install provider plugin
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
 
+      - name: Azure login (OIDC)
+        if: vars.AZURE_CLIENT_ID != ''
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
       - name: Preview (optional)
-        if: env.POWER_PLATFORM_CLIENT_ID != ''
-        env:
-          POWER_PLATFORM_CLIENT_ID: ${{ secrets.POWER_PLATFORM_CLIENT_ID }}
-          POWER_PLATFORM_CLIENT_SECRET: ${{ secrets.POWER_PLATFORM_CLIENT_SECRET }}
-          POWER_PLATFORM_TENANT_ID: ${{ secrets.POWER_PLATFORM_TENANT_ID }}
+        if: vars.AZURE_CLIENT_ID != ''
         run: |
           pulumi stack init dev --non-interactive
           pulumi preview --non-interactive --stack dev
@@ -100,6 +114,9 @@ jobs:
   dotnet:
     name: ".NET SDK"
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     defaults:
       run:
         working-directory: dotnet
@@ -126,12 +143,16 @@ jobs:
       - name: Install provider plugin
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
 
+      - name: Azure login (OIDC)
+        if: vars.AZURE_CLIENT_ID != ''
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
       - name: Preview (optional)
-        if: env.POWER_PLATFORM_CLIENT_ID != ''
-        env:
-          POWER_PLATFORM_CLIENT_ID: ${{ secrets.POWER_PLATFORM_CLIENT_ID }}
-          POWER_PLATFORM_CLIENT_SECRET: ${{ secrets.POWER_PLATFORM_CLIENT_SECRET }}
-          POWER_PLATFORM_TENANT_ID: ${{ secrets.POWER_PLATFORM_TENANT_ID }}
+        if: vars.AZURE_CLIENT_ID != ''
         run: |
           pulumi stack init dev --non-interactive
           pulumi preview --non-interactive --stack dev
