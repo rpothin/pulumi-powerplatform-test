@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+application {
+    mainClass = 'myproject.App'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+def sdkVersion = project.findProperty('sdkVersion') ?: '0.1.16'
+
+dependencies {
+    implementation "com.pulumi:pulumi:1.0.0"
+    implementation "io.github.rpothin:powerplatform:${sdkVersion}"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}

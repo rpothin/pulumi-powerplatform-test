@@ -1,0 +1,3 @@
+name: test-typescript
+runtime: nodejs
+description: Smoke test for the published TypeScript SDK

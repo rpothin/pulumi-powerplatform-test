@@ -1,0 +1,3 @@
+name: test-go
+runtime: go
+description: Smoke test for the published Go SDK

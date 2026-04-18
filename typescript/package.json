@@ -1,0 +1,14 @@
+{
+  "name": "test-typescript",
+  "version": "1.0.0",
+  "description": "Smoke test for the published TypeScript SDK",
+  "main": "index.ts",
+  "dependencies": {
+    "@rpothin/powerplatform": ">=0.1.16",
+    "@pulumi/pulumi": "^3.142.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5.0.0"
+  }
+}
