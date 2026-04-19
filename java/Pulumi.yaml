@@ -1,0 +1,3 @@
+name: test-java
+runtime: java
+description: Smoke test for the published Java SDK

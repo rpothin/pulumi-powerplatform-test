@@ -1,0 +1,3 @@
+name: test-dotnet
+runtime: dotnet
+description: Smoke test for the published .NET SDK
