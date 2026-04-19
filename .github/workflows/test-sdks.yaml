@@ -6,7 +6,7 @@ on:
       version:
         description: "SDK version to test (e.g. 0.1.16)"
         required: true
-        default: "0.1.16"
+        default: "0.1.17"
   repository_dispatch:
     types: [test-sdks]
   schedule:
@@ -216,6 +216,12 @@ jobs:
   java:
     name: "Java SDK"
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     defaults:
       run:
         working-directory: java
@@ -230,7 +236,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Build
-        run: gradle compileJava -PsdkVersion="${{ env.SDK_VERSION }}"
+        run: gradle build -PsdkVersion="${{ env.SDK_VERSION }}"
 
       - name: Install Pulumi CLI
         uses: pulumi/actions@v6
@@ -239,4 +245,18 @@ jobs:
 
       - name: Install provider plugin
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
+
+      - name: Azure login (OIDC)
+        if: env.AZURE_CLIENT_ID != ''
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Preview (optional)
+        if: env.AZURE_CLIENT_ID != ''
+        run: |
+          pulumi stack init dev --non-interactive
+          pulumi preview --non-interactive --stack dev
 
