@@ -65,6 +65,7 @@ jobs:
       - name: Preview (optional)
         if: env.AZURE_CLIENT_ID != ''
         run: |
+          set -o pipefail
           pulumi stack init dev --non-interactive
           pulumi preview --non-interactive --stack dev --logtostderr -v=9 2>&1 | tail -200
 
@@ -114,6 +115,7 @@ jobs:
       - name: Preview (optional)
         if: env.AZURE_CLIENT_ID != ''
         run: |
+          set -o pipefail
           pulumi stack init dev --non-interactive
           pulumi preview --non-interactive --stack dev --logtostderr -v=9 2>&1 | tail -200
 
