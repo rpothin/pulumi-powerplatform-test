@@ -59,4 +59,4 @@ gradle compileJava
 
 - **No real deployments** — These tests only install, compile, and optionally preview. They never run `pulumi up`.
 - **Go SDK** — Requires a `go.mod` to exist in the upstream provider's `sdk/go/powerplatform` directory. The CI job skips if the module isn't available. See below for details.
-- **Preview** — Only runs when `AZURE_CLIENT_ID` and `AZURE_TENANT_ID` are configured as repository **variables** (Settings → Variables → Actions). Authentication uses OIDC (no client secret required) — the Azure AD app registration must have a federated credential trusting the GitHub Actions OIDC issuer for this repository.
+- **Preview** — Only runs when `AZURE_CLIENT_ID` and `AZURE_TENANT_ID` are configured as repository **secrets** (Settings → Secrets and variables → Actions → Repository secrets). Authentication uses OIDC (no client secret required) — the Azure AD app registration must have a federated credential trusting the GitHub Actions OIDC issuer for this repository.

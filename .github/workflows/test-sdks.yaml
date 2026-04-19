@@ -24,6 +24,9 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     defaults:
       run:
         working-directory: python
@@ -52,15 +55,15 @@ jobs:
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
 
       - name: Azure login (OIDC)
-        if: vars.AZURE_CLIENT_ID != ''
+        if: env.AZURE_CLIENT_ID != ''
         uses: azure/login@v2
         with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
       - name: Preview (optional)
-        if: vars.AZURE_CLIENT_ID != ''
+        if: env.AZURE_CLIENT_ID != ''
         run: |
           pulumi stack init dev --non-interactive
           pulumi preview --non-interactive --stack dev
@@ -71,6 +74,9 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     defaults:
       run:
         working-directory: typescript
@@ -98,15 +104,15 @@ jobs:
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
 
       - name: Azure login (OIDC)
-        if: vars.AZURE_CLIENT_ID != ''
+        if: env.AZURE_CLIENT_ID != ''
         uses: azure/login@v2
         with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
       - name: Preview (optional)
-        if: vars.AZURE_CLIENT_ID != ''
+        if: env.AZURE_CLIENT_ID != ''
         run: |
           pulumi stack init dev --non-interactive
           pulumi preview --non-interactive --stack dev
@@ -117,6 +123,9 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     defaults:
       run:
         working-directory: dotnet
@@ -144,15 +153,15 @@ jobs:
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
 
       - name: Azure login (OIDC)
-        if: vars.AZURE_CLIENT_ID != ''
+        if: env.AZURE_CLIENT_ID != ''
         uses: azure/login@v2
         with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
       - name: Preview (optional)
-        if: vars.AZURE_CLIENT_ID != ''
+        if: env.AZURE_CLIENT_ID != ''
         run: |
           pulumi stack init dev --non-interactive
           pulumi preview --non-interactive --stack dev
@@ -224,3 +233,4 @@ jobs:
 
       - name: Install provider plugin
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
+
