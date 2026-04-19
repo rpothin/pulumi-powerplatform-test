@@ -1,5 +1,7 @@
 using Pulumi;
 using Pulumi.Powerplatform;
+using Environment = Pulumi.Powerplatform.Environment;
+using EnvironmentArgs = Pulumi.Powerplatform.EnvironmentArgs;
 
 return await Deployment.RunAsync(() =>
 {
