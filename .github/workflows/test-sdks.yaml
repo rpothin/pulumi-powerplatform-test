@@ -237,6 +237,25 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      - name: Wait for Maven Central propagation
+        shell: bash
+        run: |
+          VERSION="${{ env.SDK_VERSION }}"
+          METADATA_URL="https://repo1.maven.org/maven2/io/github/rpothin/powerplatform/maven-metadata.xml"
+          MAX_RETRIES=20
+          RETRY_INTERVAL=30
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i/$MAX_RETRIES: checking Maven Central for version $VERSION..."
+            if curl -sf "$METADATA_URL" | grep -q "<version>${VERSION}</version>"; then
+              echo "Version $VERSION is available on Maven Central."
+              exit 0
+            fi
+            echo "Not yet available. Waiting ${RETRY_INTERVAL}s..."
+            sleep $RETRY_INTERVAL
+          done
+          echo "Timed out waiting for version $VERSION on Maven Central."
+          exit 1
+
       - name: Build
         run: ./gradlew build --stacktrace -PsdkVersion="${{ env.SDK_VERSION }}"
 
