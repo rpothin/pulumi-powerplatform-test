@@ -65,8 +65,9 @@ jobs:
       - name: Preview (optional)
         if: env.AZURE_CLIENT_ID != ''
         run: |
+          set -o pipefail
           pulumi stack init dev --non-interactive
-          pulumi preview --non-interactive --stack dev
+          pulumi preview --non-interactive --stack dev --logtostderr -v=9 2>&1 | tail -200
 
   typescript:
     name: "TypeScript SDK"
@@ -114,8 +115,9 @@ jobs:
       - name: Preview (optional)
         if: env.AZURE_CLIENT_ID != ''
         run: |
+          set -o pipefail
           pulumi stack init dev --non-interactive
-          pulumi preview --non-interactive --stack dev
+          pulumi preview --non-interactive --stack dev --logtostderr -v=9 2>&1 | tail -200
 
   dotnet:
     name: ".NET SDK"
@@ -236,7 +238,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Build
-        run: gradle build -PsdkVersion="${{ env.SDK_VERSION }}"
+        run: ./gradlew build --stacktrace -PsdkVersion="${{ env.SDK_VERSION }}"
 
       - name: Install Pulumi CLI
         uses: pulumi/actions@v6
