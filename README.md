@@ -58,5 +58,5 @@ gradle compileJava
 ## Notes
 
 - **No real deployments** — These tests only install, compile, and optionally preview. They never run `pulumi up`.
-- **Go SDK** — Requires a `go.mod` to exist in the upstream provider's `sdk/go/powerplatform` directory. The CI job skips if the module isn't available. See below for details.
+- **Go SDK** — Requires v0.1.17+. A `go.mod` was added to the upstream provider's `sdk/go/powerplatform/` directory in [pulumi-powerplatform#26](https://github.com/rpothin/pulumi-powerplatform/pull/26), making the module resolvable on the Go module proxy from that release onward.
 - **Preview** — Only runs when `AZURE_CLIENT_ID` and `AZURE_TENANT_ID` are configured as repository **secrets** (Settings → Secrets and variables → Actions → Repository secrets). Authentication uses OIDC (no client secret required) — the Azure AD app registration must have a federated credential trusting the GitHub Actions OIDC issuer for this repository.

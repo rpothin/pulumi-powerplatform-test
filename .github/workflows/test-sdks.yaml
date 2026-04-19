@@ -13,7 +13,7 @@ on:
     - cron: "0 8 * * 1" # Weekly on Monday at 08:00 UTC
 
 env:
-  SDK_VERSION: ${{ github.event.inputs.version || github.event.client_payload.version || '0.1.16' }}
+  SDK_VERSION: ${{ github.event.inputs.version || github.event.client_payload.version || '0.1.17' }}
   PULUMI_BACKEND_URL: "file://~"
   PULUMI_CONFIG_PASSPHRASE: "test"
 
@@ -169,6 +169,12 @@ jobs:
   go:
     name: "Go SDK"
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     defaults:
       run:
         working-directory: go
@@ -179,33 +185,33 @@ jobs:
         with:
           go-version: "1.21"
 
-      - name: Check module availability
-        id: check
-        run: |
-          if go list -m "github.com/rpothin/pulumi-powerplatform/sdk/go/powerplatform@v${{ env.SDK_VERSION }}" 2>/dev/null; then
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "::warning::Go module not available at v${{ env.SDK_VERSION }} — skipping build"
-            echo "available=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Download dependencies
-        if: steps.check.outputs.available == 'true'
         run: go mod tidy
 
       - name: Build
-        if: steps.check.outputs.available == 'true'
         run: go build -o /dev/null .
 
       - name: Install Pulumi CLI
-        if: steps.check.outputs.available == 'true'
         uses: pulumi/actions@v6
         with:
           pulumi-version: "latest"
 
       - name: Install provider plugin
-        if: steps.check.outputs.available == 'true'
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
+
+      - name: Azure login (OIDC)
+        if: env.AZURE_CLIENT_ID != ''
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Preview (optional)
+        if: env.AZURE_CLIENT_ID != ''
+        run: |
+          pulumi stack init dev --non-interactive
+          pulumi preview --non-interactive --stack dev
 
   java:
     name: "Java SDK"
