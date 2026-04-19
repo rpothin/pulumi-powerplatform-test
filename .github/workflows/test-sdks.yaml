@@ -6,14 +6,14 @@ on:
       version:
         description: "SDK version to test (e.g. 0.1.16)"
         required: true
-        default: "0.1.17"
+        default: "0.1.20"
   repository_dispatch:
     types: [test-sdks]
   schedule:
     - cron: "0 8 * * 1" # Weekly on Monday at 08:00 UTC
 
 env:
-  SDK_VERSION: ${{ github.event.inputs.version || github.event.client_payload.version || '0.1.17' }}
+  SDK_VERSION: ${{ github.event.inputs.version || github.event.client_payload.version || '0.1.20' }}
   PULUMI_BACKEND_URL: "file://~"
   PULUMI_CONFIG_PASSPHRASE: "test"
 
