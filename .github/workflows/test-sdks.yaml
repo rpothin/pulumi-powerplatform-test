@@ -245,7 +245,6 @@ jobs:
     env:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      ORG_GRADLE_PROJECT_sdkVersion: ${{ env.SDK_VERSION }}
     defaults:
       run:
         working-directory: java
@@ -304,6 +303,8 @@ jobs:
 
       - name: Preview (optional)
         if: env.AZURE_CLIENT_ID != ''
+        env:
+          ORG_GRADLE_PROJECT_sdkVersion: ${{ env.SDK_VERSION }}
         run: |
           pulumi stack init dev --non-interactive
           pulumi preview --non-interactive --stack dev
