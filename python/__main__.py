@@ -9,3 +9,6 @@ env = pp.Environment(
 )
 
 pulumi.export("envId", env.id)
+pulumi.export("envState", env.state)
+pulumi.export("envType", env.environment_type)
+pulumi.export("envLocation", env.location)
