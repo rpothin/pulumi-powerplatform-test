@@ -46,6 +46,11 @@ jobs:
       - name: Compile check
         run: python -m py_compile __main__.py
 
+      - name: Set up Pulumi venv
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install "rpothin-powerplatform==${{ env.SDK_VERSION }}"
+
       - name: Install Pulumi CLI
         uses: pulumi/actions@v6
         with:
@@ -91,6 +96,11 @@ jobs:
 
       - name: Install SDK
         run: pip install "rpothin-powerplatform==${{ env.SDK_VERSION }}"
+
+      - name: Set up Pulumi venv
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install "rpothin-powerplatform==${{ env.SDK_VERSION }}"
 
       - name: Install Pulumi CLI
         uses: pulumi/actions@v6
