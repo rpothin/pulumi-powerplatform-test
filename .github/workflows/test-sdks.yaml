@@ -112,6 +112,10 @@ jobs:
         if: env.AZURE_CLIENT_ID != ''
         run: pulumi stack init "e2e-${{ github.run_id }}" --non-interactive
 
+      - name: Copy stack config
+        if: env.AZURE_CLIENT_ID != ''
+        run: cp Pulumi.e2e.yaml "Pulumi.e2e-${{ github.run_id }}.yaml"
+
       - name: pulumi up
         if: env.AZURE_CLIENT_ID != ''
         run: |

@@ -1,0 +1,4 @@
+config:
+  test-python:location: unitedstates
+  test-python:environmentType: Sandbox
+  test-python:displayName: SDK Preview Test

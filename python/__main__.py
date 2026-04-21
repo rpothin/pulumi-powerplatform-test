@@ -1,11 +1,13 @@
 import pulumi
 import rpothin_powerplatform as pp
 
+config = pulumi.Config()
+
 env = pp.Environment(
     "test-env",
-    display_name="SDK Test",
-    location="unitedstates",
-    environment_type="Sandbox",
+    display_name=config.get("displayName") or "SDK Test",
+    location=config.require("location"),
+    environment_type=config.require("environmentType"),
 )
 
 pulumi.export("envId", env.id)
