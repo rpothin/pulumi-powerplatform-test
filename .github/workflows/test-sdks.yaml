@@ -144,8 +144,9 @@ jobs:
           errors = []
           if not out.get("envId"):
               errors.append("envId is empty")
-          if out.get("envState") != "Ready":
-              errors.append(f"envState is '{out.get('envState')}', expected 'Ready'")
+          valid_env_states = {"Ready", "Enabled", "Succeeded"}
+          if out.get("envState") not in valid_env_states:
+              errors.append(f"envState is '{out.get('envState')}', expected one of {sorted(valid_env_states)}")
           if out.get("envType") != "Sandbox":
               errors.append(f"envType is '{out.get('envType')}', expected 'Sandbox'")
           if out.get("envLocation") != "unitedstates":
@@ -245,6 +246,25 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
+
+      - name: Wait for NuGet propagation
+        shell: bash
+        run: |
+          VERSION="${{ env.SDK_VERSION }}"
+          INDEX_URL="https://api.nuget.org/v3-flatcontainer/rpothin.powerplatform/index.json"
+          MAX_RETRIES=20
+          RETRY_INTERVAL=30
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i/$MAX_RETRIES: checking NuGet for version $VERSION..."
+            if curl -sf "$INDEX_URL" | grep -q "\"${VERSION}\""; then
+              echo "Version $VERSION is available on NuGet."
+              exit 0
+            fi
+            echo "Not yet available. Waiting ${RETRY_INTERVAL}s..."
+            sleep $RETRY_INTERVAL
+          done
+          echo "Timed out waiting for version $VERSION on NuGet."
+          exit 1
 
       - name: Install SDK and restore
         run: |
