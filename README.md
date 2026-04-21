@@ -55,8 +55,31 @@ cd java
 gradle compileJava
 ```
 
+## E2E Integration Tests
+
+The `python-e2e` job runs a full **up → verify → refresh → destroy** lifecycle against the live Power Platform API.
+
+### What it does
+
+1. Creates a real Sandbox environment via `pulumi up`
+2. Validates stack outputs (`envId`, `envState`, `envType`, `envLocation`)
+3. Runs `pulumi refresh` to confirm the resource matches live state
+4. Destroys the environment via `pulumi destroy` (always runs, even on failure)
+
+> **Note:** This job creates and destroys a real Sandbox environment — expect ~10 minutes of runtime.
+
+### Required Azure permissions
+
+The OIDC app registration (`AZURE_CLIENT_ID` secret) must be assigned the **Power Platform Administrator** Azure AD role. The `pulumi up` step calls the BAP admin API to provision a Sandbox environment, which requires this elevated role.
+
+### How to trigger
+
+`Actions → Test Published SDKs → Run workflow → enter SDK version`
+
+The E2E job runs automatically as part of the workflow whenever credentials are configured.
+
 ## Notes
 
-- **No real deployments** — These tests only install, compile, and optionally preview. They never run `pulumi up`.
+- **No real deployments** — The `python`, `typescript`, `dotnet`, `go`, and `java` jobs only install, compile, and optionally preview. They never run `pulumi up`.
 - **Go SDK** — Requires v0.1.17+. A `go.mod` was added to the upstream provider's `sdk/go/powerplatform/` directory in [pulumi-powerplatform#26](https://github.com/rpothin/pulumi-powerplatform/pull/26), making the module resolvable on the Go module proxy from that release onward.
 - **Preview** — Only runs when `AZURE_CLIENT_ID` and `AZURE_TENANT_ID` are configured as repository **secrets** (Settings → Secrets and variables → Actions → Repository secrets). Authentication uses OIDC (no client secret required) — the Azure AD app registration must have a federated credential trusting the GitHub Actions OIDC issuer for this repository.

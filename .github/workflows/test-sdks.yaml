@@ -69,6 +69,96 @@ jobs:
           pulumi stack init dev --non-interactive
           pulumi preview --non-interactive --stack dev --logtostderr -v=9 2>&1 | tail -200
 
+  python-e2e:
+    name: "Python SDK E2E"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install SDK
+        run: pip install "rpothin-powerplatform==${{ env.SDK_VERSION }}"
+
+      - name: Install Pulumi CLI
+        uses: pulumi/actions@v6
+        with:
+          pulumi-version: "latest"
+
+      - name: Install provider plugin
+        run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
+
+      - name: Azure login (OIDC)
+        if: env.AZURE_CLIENT_ID != ''
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Stack init
+        if: env.AZURE_CLIENT_ID != ''
+        run: pulumi stack init "e2e-${{ github.run_id }}" --non-interactive
+
+      - name: Copy stack config
+        if: env.AZURE_CLIENT_ID != ''
+        run: cp Pulumi.e2e.yaml "Pulumi.e2e-${{ github.run_id }}.yaml"
+
+      - name: pulumi up
+        if: env.AZURE_CLIENT_ID != ''
+        run: |
+          set -o pipefail
+          pulumi up --yes --non-interactive --stack "e2e-${{ github.run_id }}" --logtostderr -v=9 2>&1 | tail -300
+
+      - name: Validate outputs
+        if: env.AZURE_CLIENT_ID != ''
+        run: |
+          python - << 'EOF'
+          import json, subprocess, sys
+          out = json.loads(subprocess.check_output(
+              ["pulumi", "stack", "output", "--json", "--stack", "e2e-${{ github.run_id }}"],
+              text=True
+          ))
+          errors = []
+          if not out.get("envId"):
+              errors.append("envId is empty")
+          if out.get("envState") != "Ready":
+              errors.append(f"envState is '{out.get('envState')}', expected 'Ready'")
+          if out.get("envType") != "Sandbox":
+              errors.append(f"envType is '{out.get('envType')}', expected 'Sandbox'")
+          if out.get("envLocation") != "unitedstates":
+              errors.append(f"envLocation is '{out.get('envLocation')}', expected 'unitedstates'")
+          if errors:
+              for e in errors:
+                  print(f"FAIL: {e}", file=sys.stderr)
+              sys.exit(1)
+          print(f"PASS: envId={out['envId']}, state={out['envState']}, type={out['envType']}, location={out['envLocation']}")
+          EOF
+
+      - name: pulumi refresh
+        if: env.AZURE_CLIENT_ID != ''
+        run: pulumi refresh --yes --non-interactive --stack "e2e-${{ github.run_id }}"
+
+      - name: Destroy
+        if: always() && env.AZURE_CLIENT_ID != ''
+        run: pulumi destroy --yes --non-interactive --stack "e2e-${{ github.run_id }}"
+
+      - name: Stack rm
+        if: always() && env.AZURE_CLIENT_ID != ''
+        run: pulumi stack rm "e2e-${{ github.run_id }}" --yes --non-interactive
+
   typescript:
     name: "TypeScript SDK"
     runs-on: ubuntu-latest
