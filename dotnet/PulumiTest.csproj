@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Pulumi" Version="3.*" />
-    <PackageReference Include="Rpothin.Powerplatform" Version="0.1.17" />
+    <PackageReference Include="Rpothin.Powerplatform" Version="0.1.36" />
   </ItemGroup>
 
 </Project>

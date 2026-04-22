@@ -18,7 +18,7 @@ return await Deployment.RunAsync(() =>
 
         // Dataverse block — include this to provision a Dataverse database.
         // Omit the block entirely to create an environment without Dataverse.
-        Dataverse = new EnvironmentDataverseArgs
+        Dataverse = new DataverseArgs
         {
             // CurrencyCode and LanguageCode are required when Dataverse is specified
             CurrencyCode = "USD",
