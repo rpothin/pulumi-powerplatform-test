@@ -4,5 +4,5 @@ go 1.21
 
 require (
 	github.com/pulumi/pulumi/sdk/v3 v3.143.0
-	github.com/rpothin/pulumi-powerplatform/sdk/go/powerplatform v0.1.23
+	github.com/rpothin/pulumi-powerplatform/sdk/go/powerplatform v0.1.36
 )

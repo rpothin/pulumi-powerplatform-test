@@ -4,7 +4,7 @@
   "description": "Smoke test for the published TypeScript SDK",
   "main": "index.ts",
   "dependencies": {
-    "@rpothin/powerplatform": ">=0.1.16",
+    "@rpothin/powerplatform": ">=0.1.36",
     "@pulumi/pulumi": "^3.142.0"
   },
   "devDependencies": {

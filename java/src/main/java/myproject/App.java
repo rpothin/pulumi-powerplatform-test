@@ -3,7 +3,8 @@ package myproject;
 import com.pulumi.Pulumi;
 import io.github.rpothin.powerplatform.Environment;
 import io.github.rpothin.powerplatform.EnvironmentArgs;
-import io.github.rpothin.powerplatform.inputs.EnvironmentDataverseArgs;
+import io.github.rpothin.powerplatform.inputs.DataverseArgs;
+import io.github.rpothin.powerplatform.outputs.Dataverse;
 
 public class App {
     public static void main(String[] args) {
@@ -18,10 +19,10 @@ public class App {
                 .allowMovingDataAcrossRegions(false)
                 // Dataverse block — include this to provision a Dataverse database.
                 // Omit the block entirely to create an environment without Dataverse.
-                .dataverse(EnvironmentDataverseArgs.builder()
+                .dataverse(DataverseArgs.builder()
                     // currencyCode and languageCode are required when dataverse is specified
                     .currencyCode("USD")
-                    .languageCode(1033) // 1033 = English
+                    .languageCode(1033.0) // 1033 = English
                     // Put the environment into admin-only mode (blocks regular users)
                     .administrationModeEnabled(false)
                     // Allow background operations to continue while administration mode is active
@@ -48,10 +49,10 @@ public class App {
             ctx.export("envType", env.environmentType());
             ctx.export("envLocation", env.location());
             // Computed outputs from the Dataverse block
-            ctx.export("envDataverseUrl", env.dataverse().applyValue(d -> d == null ? "" : d.url()));
-            ctx.export("envDataverseOrganizationId", env.dataverse().applyValue(d -> d == null ? "" : d.organizationId()));
-            ctx.export("envDataverseUniqueName", env.dataverse().applyValue(d -> d == null ? "" : d.uniqueName()));
-            ctx.export("envDataverseVersion", env.dataverse().applyValue(d -> d == null ? "" : d.version()));
+            ctx.export("envDataverseUrl", env.dataverse().applyValue(d -> d.flatMap(v -> v.url()).orElse("")));
+            ctx.export("envDataverseOrganizationId", env.dataverse().applyValue(d -> d.flatMap(v -> v.organizationId()).orElse("")));
+            ctx.export("envDataverseUniqueName", env.dataverse().applyValue(d -> d.flatMap(v -> v.uniqueName()).orElse("")));
+            ctx.export("envDataverseVersion", env.dataverse().applyValue(d -> d.flatMap(v -> v.version()).orElse("")));
         });
     }
 }

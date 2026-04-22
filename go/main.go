@@ -18,10 +18,10 @@ func main() {
 
 			// Dataverse block — include this to provision a Dataverse database.
 			// Omit the block entirely to create an environment without Dataverse.
-			Dataverse: &pp.EnvironmentDataverseArgs{
+			Dataverse: &pp.DataverseArgs{
 				// CurrencyCode and LanguageCode are required when Dataverse is specified
 				CurrencyCode: pulumi.String("USD"),
-				LanguageCode: pulumi.Int(1033), // 1033 = English
+				LanguageCode: pulumi.Float64(1033), // 1033 = English
 				// Put the environment into admin-only mode (blocks regular users)
 				AdministrationModeEnabled: pulumi.Bool(false),
 				// Allow background operations to continue while administration mode is active
@@ -53,29 +53,41 @@ func main() {
 		ctx.Export("envLocation", env.Location)
 
 		// Computed outputs from the Dataverse block
-		ctx.Export("envDataverseUrl", env.Dataverse.ApplyT(func(d *pp.EnvironmentDataverse) string {
+		ctx.Export("envDataverseUrl", env.Dataverse.ApplyT(func(d *pp.Dataverse) string {
 			if d == nil {
 				return ""
 			}
-			return d.Url
+			if d.Url == nil {
+				return ""
+			}
+			return *d.Url
 		}).(pulumi.StringOutput))
-		ctx.Export("envDataverseOrganizationId", env.Dataverse.ApplyT(func(d *pp.EnvironmentDataverse) string {
+		ctx.Export("envDataverseOrganizationId", env.Dataverse.ApplyT(func(d *pp.Dataverse) string {
 			if d == nil {
 				return ""
 			}
-			return d.OrganizationId
+			if d.OrganizationId == nil {
+				return ""
+			}
+			return *d.OrganizationId
 		}).(pulumi.StringOutput))
-		ctx.Export("envDataverseUniqueName", env.Dataverse.ApplyT(func(d *pp.EnvironmentDataverse) string {
+		ctx.Export("envDataverseUniqueName", env.Dataverse.ApplyT(func(d *pp.Dataverse) string {
 			if d == nil {
 				return ""
 			}
-			return d.UniqueName
+			if d.UniqueName == nil {
+				return ""
+			}
+			return *d.UniqueName
 		}).(pulumi.StringOutput))
-		ctx.Export("envDataverseVersion", env.Dataverse.ApplyT(func(d *pp.EnvironmentDataverse) string {
+		ctx.Export("envDataverseVersion", env.Dataverse.ApplyT(func(d *pp.Dataverse) string {
 			if d == nil {
 				return ""
 			}
-			return d.Version
+			if d.Version == nil {
+				return ""
+			}
+			return *d.Version
 		}).(pulumi.StringOutput))
 
 		return nil
