@@ -2,3 +2,17 @@ config:
   test-python:location: unitedstates
   test-python:environmentType: Sandbox
   test-python:displayName: SDK E2E Test
+  # Release cadence for environment updates: "Frequent" or "Moderate" (immutable)
+  # test-python:cadence: Moderate
+  # AAD user/group GUID that owns the environment (updatable)
+  # test-python:ownerId: 00000000-0000-0000-0000-000000000000
+  # AAD group GUID that restricts environment access (updatable)
+  # test-python:securityGroupId: 00000000-0000-0000-0000-000000000000
+  # Allow Copilot / Bing Search in this environment (updatable)
+  test-python:allowBingSearch: "false"
+  # Allow data movement across geographic regions for AI features (updatable)
+  test-python:allowMovingDataAcrossRegions: "false"
+  # Put the environment into admin-only mode (updatable)
+  test-python:administrationModeEnabled: "false"
+  # Allow background operations while administration mode is active (updatable)
+  test-python:backgroundOperationEnabled: "false"
