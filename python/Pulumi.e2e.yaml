@@ -2,3 +2,7 @@ config:
   test-python:location: unitedstates
   test-python:environmentType: Sandbox
   test-python:displayName: SDK E2E Test
+  # Optional: release cadence "Frequent" or "Moderate" (immutable)
+  # test-python:cadence: Moderate
+  # Optional: AAD user/group GUID that owns the environment
+  # test-python:ownerId: 00000000-0000-0000-0000-000000000000
