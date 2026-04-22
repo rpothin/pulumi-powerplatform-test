@@ -43,14 +43,15 @@ public class App {
                 .build());
 
             ctx.export("envId", env.id());
+            ctx.export("envDisplayName", env.displayName());
             ctx.export("envState", env.state());
             ctx.export("envType", env.environmentType());
             ctx.export("envLocation", env.location());
             // Computed outputs from the Dataverse block
-            ctx.export("envDataverseUrl", env.dataverse().applyValue(d -> d.url()));
-            ctx.export("envOrganizationId", env.dataverse().applyValue(d -> d.organizationId()));
-            ctx.export("envUniqueName", env.dataverse().applyValue(d -> d.uniqueName()));
-            ctx.export("envDataverseVersion", env.dataverse().applyValue(d -> d.version()));
+            ctx.export("envDataverseUrl", env.dataverse().applyValue(d -> d == null ? "" : d.url()));
+            ctx.export("envDataverseOrganizationId", env.dataverse().applyValue(d -> d == null ? "" : d.organizationId()));
+            ctx.export("envDataverseUniqueName", env.dataverse().applyValue(d -> d == null ? "" : d.uniqueName()));
+            ctx.export("envDataverseVersion", env.dataverse().applyValue(d -> d == null ? "" : d.version()));
         });
     }
 }

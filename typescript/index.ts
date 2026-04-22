@@ -38,12 +38,13 @@ const env = new pp.Environment("test-env", {
 });
 
 export const envId = env.id;
+export const envDisplayName = env.displayName;
 export const envState = env.state;
 export const envType = env.environmentType;
 export const envLocation = env.location;
 
 // Computed outputs from the Dataverse block
-export const envDataverseUrl = env.dataverse.apply(d => d?.url);
-export const envOrganizationId = env.dataverse.apply(d => d?.organizationId);
-export const envUniqueName = env.dataverse.apply(d => d?.uniqueName);
-export const envDataverseVersion = env.dataverse.apply(d => d?.version);
+export const envDataverseUrl = env.dataverse.apply(d => d?.url ?? "");
+export const envDataverseOrganizationId = env.dataverse.apply(d => d?.organizationId ?? "");
+export const envDataverseUniqueName = env.dataverse.apply(d => d?.uniqueName ?? "");
+export const envDataverseVersion = env.dataverse.apply(d => d?.version ?? "");

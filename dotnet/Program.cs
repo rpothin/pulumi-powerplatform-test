@@ -47,13 +47,14 @@ return await Deployment.RunAsync(() =>
     return new Dictionary<string, object?>
     {
         ["envId"] = env.Id,
+        ["envDisplayName"] = env.DisplayName,
         ["envState"] = env.State,
         ["envType"] = env.EnvironmentType,
         ["envLocation"] = env.Location,
         // Computed outputs from the Dataverse block
-        ["envDataverseUrl"] = env.Dataverse.Apply(d => d.Url),
-        ["envOrganizationId"] = env.Dataverse.Apply(d => d.OrganizationId),
-        ["envUniqueName"] = env.Dataverse.Apply(d => d.UniqueName),
-        ["envDataverseVersion"] = env.Dataverse.Apply(d => d.Version),
+        ["envDataverseUrl"] = env.Dataverse.Apply(d => d?.Url ?? ""),
+        ["envDataverseOrganizationId"] = env.Dataverse.Apply(d => d?.OrganizationId ?? ""),
+        ["envDataverseUniqueName"] = env.Dataverse.Apply(d => d?.UniqueName ?? ""),
+        ["envDataverseVersion"] = env.Dataverse.Apply(d => d?.Version ?? ""),
     };
 });

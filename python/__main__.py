@@ -46,12 +46,13 @@ env = pp.Environment(
 )
 
 pulumi.export("envId", env.id)
+pulumi.export("envDisplayName", env.display_name)
 pulumi.export("envState", env.state)
 pulumi.export("envType", env.environment_type)
 pulumi.export("envLocation", env.location)
 
 # Computed outputs from the Dataverse block
-pulumi.export("envDataverseUrl",     env.dataverse.apply(lambda d: d.get("url", "") if d else ""))
-pulumi.export("envOrganizationId",   env.dataverse.apply(lambda d: d.get("organizationId", "") if d else ""))
-pulumi.export("envUniqueName",       env.dataverse.apply(lambda d: d.get("uniqueName", "") if d else ""))
-pulumi.export("envDataverseVersion", env.dataverse.apply(lambda d: d.get("version", "") if d else ""))
+pulumi.export("envDataverseUrl",              env.dataverse.apply(lambda d: d.get("url", "") if d else ""))
+pulumi.export("envDataverseOrganizationId",   env.dataverse.apply(lambda d: d.get("organizationId", "") if d else ""))
+pulumi.export("envDataverseUniqueName",       env.dataverse.apply(lambda d: d.get("uniqueName", "") if d else ""))
+pulumi.export("envDataverseVersion",          env.dataverse.apply(lambda d: d.get("version", "") if d else ""))

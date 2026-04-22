@@ -47,6 +47,7 @@ func main() {
 		}
 
 		ctx.Export("envId", env.ID())
+		ctx.Export("envDisplayName", env.DisplayName)
 		ctx.Export("envState", env.State)
 		ctx.Export("envType", env.EnvironmentType)
 		ctx.Export("envLocation", env.Location)
@@ -58,13 +59,13 @@ func main() {
 			}
 			return d.Url
 		}).(pulumi.StringOutput))
-		ctx.Export("envOrganizationId", env.Dataverse.ApplyT(func(d *pp.EnvironmentDataverse) string {
+		ctx.Export("envDataverseOrganizationId", env.Dataverse.ApplyT(func(d *pp.EnvironmentDataverse) string {
 			if d == nil {
 				return ""
 			}
 			return d.OrganizationId
 		}).(pulumi.StringOutput))
-		ctx.Export("envUniqueName", env.Dataverse.ApplyT(func(d *pp.EnvironmentDataverse) string {
+		ctx.Export("envDataverseUniqueName", env.Dataverse.ApplyT(func(d *pp.EnvironmentDataverse) string {
 			if d == nil {
 				return ""
 			}
