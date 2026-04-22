@@ -38,6 +38,9 @@ const env = new pp.Environment("test-env", {
 });
 
 export const envId = env.id;
+export const envState = env.state;
+export const envType = env.environmentType;
+export const envLocation = env.location;
 
 // Computed outputs from the Dataverse block
 export const envDataverseUrl = env.dataverse.apply(d => d?.url);

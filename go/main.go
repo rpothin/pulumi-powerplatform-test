@@ -47,12 +47,35 @@ func main() {
 		}
 
 		ctx.Export("envId", env.ID())
+		ctx.Export("envState", env.State)
+		ctx.Export("envType", env.EnvironmentType)
+		ctx.Export("envLocation", env.Location)
 
 		// Computed outputs from the Dataverse block
-		ctx.Export("envDataverseUrl", env.Dataverse.Url())
-		ctx.Export("envOrganizationId", env.Dataverse.OrganizationId())
-		ctx.Export("envUniqueName", env.Dataverse.UniqueName())
-		ctx.Export("envDataverseVersion", env.Dataverse.Version())
+		ctx.Export("envDataverseUrl", env.Dataverse.ApplyT(func(d *pp.EnvironmentDataverse) string {
+			if d == nil {
+				return ""
+			}
+			return d.Url
+		}).(pulumi.StringOutput))
+		ctx.Export("envOrganizationId", env.Dataverse.ApplyT(func(d *pp.EnvironmentDataverse) string {
+			if d == nil {
+				return ""
+			}
+			return d.OrganizationId
+		}).(pulumi.StringOutput))
+		ctx.Export("envUniqueName", env.Dataverse.ApplyT(func(d *pp.EnvironmentDataverse) string {
+			if d == nil {
+				return ""
+			}
+			return d.UniqueName
+		}).(pulumi.StringOutput))
+		ctx.Export("envDataverseVersion", env.Dataverse.ApplyT(func(d *pp.EnvironmentDataverse) string {
+			if d == nil {
+				return ""
+			}
+			return d.Version
+		}).(pulumi.StringOutput))
 
 		return nil
 	})

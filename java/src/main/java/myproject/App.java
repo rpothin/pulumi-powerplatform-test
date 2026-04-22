@@ -43,6 +43,9 @@ public class App {
                 .build());
 
             ctx.export("envId", env.id());
+            ctx.export("envState", env.state());
+            ctx.export("envType", env.environmentType());
+            ctx.export("envLocation", env.location());
             // Computed outputs from the Dataverse block
             ctx.export("envDataverseUrl", env.dataverse().applyValue(d -> d.url()));
             ctx.export("envOrganizationId", env.dataverse().applyValue(d -> d.organizationId()));

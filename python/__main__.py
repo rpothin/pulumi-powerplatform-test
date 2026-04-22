@@ -51,7 +51,7 @@ pulumi.export("envType", env.environment_type)
 pulumi.export("envLocation", env.location)
 
 # Computed outputs from the Dataverse block
-pulumi.export("envDataverseUrl", env.dataverse["url"])
-pulumi.export("envOrganizationId", env.dataverse["organizationId"])
-pulumi.export("envUniqueName", env.dataverse["uniqueName"])
-pulumi.export("envDataverseVersion", env.dataverse["version"])
+pulumi.export("envDataverseUrl",     env.dataverse.apply(lambda d: d.get("url", "") if d else ""))
+pulumi.export("envOrganizationId",   env.dataverse.apply(lambda d: d.get("organizationId", "") if d else ""))
+pulumi.export("envUniqueName",       env.dataverse.apply(lambda d: d.get("uniqueName", "") if d else ""))
+pulumi.export("envDataverseVersion", env.dataverse.apply(lambda d: d.get("version", "") if d else ""))

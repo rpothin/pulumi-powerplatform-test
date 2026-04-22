@@ -47,6 +47,9 @@ return await Deployment.RunAsync(() =>
     return new Dictionary<string, object?>
     {
         ["envId"] = env.Id,
+        ["envState"] = env.State,
+        ["envType"] = env.EnvironmentType,
+        ["envLocation"] = env.Location,
         // Computed outputs from the Dataverse block
         ["envDataverseUrl"] = env.Dataverse.Apply(d => d.Url),
         ["envOrganizationId"] = env.Dataverse.Apply(d => d.OrganizationId),
