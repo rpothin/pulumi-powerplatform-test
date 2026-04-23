@@ -1,8 +1,14 @@
 config:
-  test-python:location: unitedstates
+  test-python:location: canada
   test-python:environmentType: Sandbox
-  test-python:displayName: SDK E2E Test
+  test-python:displayName: Pulumi SDK E2E Test
+  # --- Optional inputs ---
+  test-python:description: Environment created with the in-construction Power Platform Pulumi provider
+  test-python:dataverse:
+    currencyCode: CAD
+    languageCode: 1033
+    securityGroupId: 6a199811-5433-4076-81e8-1ca7ad8ffb67
   # Optional: release cadence "Frequent" or "Moderate" (immutable)
-  # test-python:cadence: Moderate
+  test-python:cadence: Moderate
   # Optional: AAD user/group GUID that owns the environment
   # test-python:ownerId: 00000000-0000-0000-0000-000000000000
