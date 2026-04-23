@@ -137,25 +137,64 @@ jobs:
         run: |
           python - << 'EOF'
           import json, subprocess, sys
+
+          # Actual stack outputs
           out = json.loads(subprocess.check_output(
               ["pulumi", "stack", "output", "--json", "--stack", "e2e-${{ github.run_id }}"],
               text=True
           ))
+
+          # Stack config — used to derive expected values so validation stays
+          # in sync with whatever Pulumi.e2e.yaml contains.
+          cfg_raw = json.loads(subprocess.check_output(
+              ["pulumi", "config", "--json", "--stack", "e2e-${{ github.run_id }}"],
+              text=True
+          ))
+
+          def cfg_get(key):
+              entry = cfg_raw.get(f"test-python:{key}")
+              return entry["value"] if entry else None
+
+          expected_type     = cfg_get("environmentType")
+          expected_location = cfg_get("location")
+          expected_desc     = cfg_get("description")
+          dataverse_str     = cfg_get("dataverse")
+          expected_sg_id    = None
+          if dataverse_str:
+              dv = json.loads(dataverse_str)
+              expected_sg_id = dv.get("securityGroupId")
+
           errors = []
           if not out.get("envId"):
               errors.append("envId is empty")
           valid_env_states = {"Ready", "Enabled", "Succeeded"}
           if out.get("envState") not in valid_env_states:
               errors.append(f"envState is '{out.get('envState')}', expected one of {sorted(valid_env_states)}")
-          if out.get("envType") != "Sandbox":
-              errors.append(f"envType is '{out.get('envType')}', expected 'Sandbox'")
-          if out.get("envLocation") != "unitedstates":
-              errors.append(f"envLocation is '{out.get('envLocation')}', expected 'unitedstates'")
+          if expected_type and out.get("envType") != expected_type:
+              errors.append(f"envType is '{out.get('envType')}', expected '{expected_type}'")
+          if expected_location and out.get("envLocation") != expected_location:
+              errors.append(f"envLocation is '{out.get('envLocation')}', expected '{expected_location}'")
+          if expected_desc is not None and out.get("envDescription") != expected_desc:
+              errors.append(f"envDescription is '{out.get('envDescription')}', expected '{expected_desc}'")
+          if expected_sg_id is not None and out.get("envDataverseSecurityGroupId") != expected_sg_id:
+              errors.append(f"envDataverseSecurityGroupId is '{out.get('envDataverseSecurityGroupId')}', expected '{expected_sg_id}'")
+
           if errors:
               for e in errors:
                   print(f"FAIL: {e}", file=sys.stderr)
               sys.exit(1)
-          print(f"PASS: envId={out['envId']}, state={out['envState']}, type={out['envType']}, location={out['envLocation']}")
+
+          validated = {
+              "envId":    out["envId"],
+              "state":    out["envState"],
+              "type":     out["envType"],
+              "location": out["envLocation"],
+          }
+          if expected_desc is not None:
+              validated["description"] = out.get("envDescription", "")
+          if expected_sg_id is not None:
+              validated["securityGroupId"] = out.get("envDataverseSecurityGroupId", "")
+          print("PASS: " + ", ".join(f"{k}={v}" for k, v in validated.items()))
           EOF
 
       - name: pulumi refresh
