@@ -12,19 +12,16 @@ description = config.get("description")
 # config.get_object returns a dict when the key exists, or None when absent.
 dataverse_cfg = config.get_object("dataverse")
 if dataverse_cfg is not None:
-    dataverse_block: dict = {
-        # currencyCode and languageCode are required when dataverse is specified
-        "currencyCode": dataverse_cfg["currencyCode"],
-        "languageCode": dataverse_cfg["languageCode"],
-        # Put the environment into admin-only mode (blocks regular users)
-        "administrationModeEnabled": dataverse_cfg.get("administrationModeEnabled", False),
-        # Allow background operations to continue while administration mode is active
-        "backgroundOperationEnabled": dataverse_cfg.get("backgroundOperationEnabled", True),
-    }
-    # Optional pass-through fields
-    for _field in ("securityGroupId", "domainName", "templates", "templateMetadata"):
-        if _field in dataverse_cfg:
-            dataverse_block[_field] = dataverse_cfg[_field]
+    dataverse_block = pp.EnvironmentDataverseArgs(
+        currency_code=dataverse_cfg["currencyCode"],
+        language_code=dataverse_cfg["languageCode"],
+        administration_mode_enabled=dataverse_cfg.get("administrationModeEnabled", False),
+        background_operation_enabled=dataverse_cfg.get("backgroundOperationEnabled", True),
+        security_group_id=dataverse_cfg.get("securityGroupId"),
+        domain_name=dataverse_cfg.get("domainName"),
+        templates=dataverse_cfg.get("templates"),
+        template_metadata=dataverse_cfg.get("templateMetadata"),
+    )
 else:
     dataverse_block = None
 
@@ -62,8 +59,8 @@ pulumi.export("envLocation", env.location)
 pulumi.export("envDescription", env.description)
 
 # Computed outputs from the Dataverse block
-pulumi.export("envDataverseUrl",              env.dataverse.apply(lambda d: d.get("url", "") if d else ""))
-pulumi.export("envDataverseOrganizationId",   env.dataverse.apply(lambda d: d.get("organization_id", "") if d else ""))
-pulumi.export("envDataverseUniqueName",       env.dataverse.apply(lambda d: d.get("unique_name", "") if d else ""))
-pulumi.export("envDataverseVersion",          env.dataverse.apply(lambda d: d.get("version", "") if d else ""))
-pulumi.export("envDataverseSecurityGroupId",  env.dataverse.apply(lambda d: d.get("security_group_id", "") if d else ""))
+pulumi.export("envDataverseUrl",             env.dataverse.apply(lambda d: (d.url              or "") if d else ""))
+pulumi.export("envDataverseOrganizationId",  env.dataverse.apply(lambda d: (d.organization_id  or "") if d else ""))
+pulumi.export("envDataverseUniqueName",      env.dataverse.apply(lambda d: (d.unique_name       or "") if d else ""))
+pulumi.export("envDataverseVersion",         env.dataverse.apply(lambda d: (d.version           or "") if d else ""))
+pulumi.export("envDataverseSecurityGroupId", env.dataverse.apply(lambda d: (d.security_group_id or "") if d else ""))
