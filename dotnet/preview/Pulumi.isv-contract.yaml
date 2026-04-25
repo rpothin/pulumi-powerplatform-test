@@ -1,0 +1,4 @@
+config:
+  preview-dotnet:resource: isv-contract
+  preview-dotnet:name: preview-isv-contract
+  preview-dotnet:geo: unitedstates

@@ -1,0 +1,5 @@
+config:
+  preview-dotnet:resource: role-assignment
+  preview-dotnet:principalObjectId: 00000000-0000-0000-0000-000000000000
+  preview-dotnet:principalType: User
+  preview-dotnet:roleDefinitionId: 00000000-0000-0000-0000-000000000000

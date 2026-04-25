@@ -1,0 +1,4 @@
+config:
+  preview-dotnet:resource: environment-backup
+  preview-dotnet:environmentId: 00000000-0000-0000-0000-000000000000
+  preview-dotnet:label: preview-backup

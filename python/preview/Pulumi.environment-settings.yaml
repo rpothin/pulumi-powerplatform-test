@@ -1,0 +1,3 @@
+config:
+  preview-python:resource: environment-settings
+  preview-python:environmentId: 00000000-0000-0000-0000-000000000000

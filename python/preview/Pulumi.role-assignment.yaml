@@ -1,0 +1,5 @@
+config:
+  preview-python:resource: role-assignment
+  preview-python:principalObjectId: 00000000-0000-0000-0000-000000000000
+  preview-python:principalType: User
+  preview-python:roleDefinitionId: 00000000-0000-0000-0000-000000000000

@@ -1,0 +1,4 @@
+config:
+  preview-typescript:resource: isv-contract
+  preview-typescript:name: preview-isv-contract
+  preview-typescript:geo: unitedstates

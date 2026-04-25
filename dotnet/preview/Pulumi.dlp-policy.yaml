@@ -1,0 +1,3 @@
+config:
+  preview-dotnet:resource: dlp-policy
+  preview-dotnet:name: preview-dlp-policy

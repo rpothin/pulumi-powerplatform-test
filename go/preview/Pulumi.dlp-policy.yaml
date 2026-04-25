@@ -1,0 +1,3 @@
+config:
+  preview-go:resource: dlp-policy
+  preview-go:name: preview-dlp-policy

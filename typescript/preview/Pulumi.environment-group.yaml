@@ -1,0 +1,3 @@
+config:
+  preview-typescript:resource: environment-group
+  preview-typescript:displayName: Preview Group

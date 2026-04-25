@@ -1,0 +1,4 @@
+config:
+  preview-python:resource: environment-backup
+  preview-python:environmentId: 00000000-0000-0000-0000-000000000000
+  preview-python:label: preview-backup

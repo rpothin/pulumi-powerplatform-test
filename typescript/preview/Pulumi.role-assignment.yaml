@@ -1,0 +1,5 @@
+config:
+  preview-typescript:resource: role-assignment
+  preview-typescript:principalObjectId: 00000000-0000-0000-0000-000000000000
+  preview-typescript:principalType: User
+  preview-typescript:roleDefinitionId: 00000000-0000-0000-0000-000000000000

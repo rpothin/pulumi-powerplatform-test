@@ -1,0 +1,4 @@
+config:
+  preview-java:resource: billing-policy
+  preview-java:name: preview-billing-policy
+  preview-java:location: unitedstates

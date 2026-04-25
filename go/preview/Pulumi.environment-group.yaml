@@ -1,0 +1,3 @@
+config:
+  preview-go:resource: environment-group
+  preview-go:displayName: Preview Group

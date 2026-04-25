@@ -1,0 +1,5 @@
+config:
+  preview-go:resource: environment
+  preview-go:displayName: Preview Test
+  preview-go:location: unitedstates
+  preview-go:environmentType: Sandbox

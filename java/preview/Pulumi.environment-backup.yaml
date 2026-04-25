@@ -1,0 +1,4 @@
+config:
+  preview-java:resource: environment-backup
+  preview-java:environmentId: 00000000-0000-0000-0000-000000000000
+  preview-java:label: preview-backup

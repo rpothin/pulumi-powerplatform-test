@@ -1,0 +1,3 @@
+config:
+  preview-python:resource: environment-group
+  preview-python:displayName: Preview Group

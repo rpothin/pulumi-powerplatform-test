@@ -1,0 +1,4 @@
+config:
+  preview-java:resource: isv-contract
+  preview-java:name: preview-isv-contract
+  preview-java:geo: unitedstates

@@ -1,0 +1,3 @@
+config:
+  preview-python:resource: dlp-policy
+  preview-python:name: preview-dlp-policy

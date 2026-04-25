@@ -1,0 +1,3 @@
+config:
+  preview-dotnet:resource: environment-group
+  preview-dotnet:displayName: Preview Group

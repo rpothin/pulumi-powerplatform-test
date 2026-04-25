@@ -1,0 +1,4 @@
+config:
+  preview-go:resource: billing-policy
+  preview-go:name: preview-billing-policy
+  preview-go:location: unitedstates

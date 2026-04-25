@@ -1,0 +1,4 @@
+config:
+  preview-dotnet:resource: billing-policy
+  preview-dotnet:name: preview-billing-policy
+  preview-dotnet:location: unitedstates

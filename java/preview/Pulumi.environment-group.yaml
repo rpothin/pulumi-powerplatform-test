@@ -1,0 +1,3 @@
+config:
+  preview-java:resource: environment-group
+  preview-java:displayName: Preview Group

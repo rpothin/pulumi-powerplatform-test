@@ -19,7 +19,7 @@ env:
 
 jobs:
   python:
-    name: "Python SDK"
+    name: "Python SDK (${{ matrix.resource }})"
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -29,19 +29,26 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     defaults:
       run:
-        working-directory: python
+        working-directory: python/preview
+    strategy:
+      matrix:
+        resource:
+          - environment
+          - environment-group
+          - dlp-policy
+          - billing-policy
+          - managed-environment
+          - environment-backup
+          - role-assignment
+          - isv-contract
+          - environment-settings
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      - name: Install SDK
-        run: pip install "rpothin-powerplatform==${{ env.SDK_VERSION }}"
-
-      - name: Verify import
-        run: python -c "import rpothin_powerplatform; print('Import OK')"
 
       - name: Compile check
         run: python -m py_compile __main__.py
@@ -67,12 +74,12 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
-      - name: Preview (optional)
+      - name: Preview
         if: env.AZURE_CLIENT_ID != ''
         run: |
           set -o pipefail
-          pulumi stack init dev --non-interactive
-          pulumi preview --non-interactive --stack dev --logtostderr -v=9 2>&1 | tail -200
+          pulumi stack init ${{ matrix.resource }} --non-interactive
+          pulumi preview --non-interactive --stack ${{ matrix.resource }} --logtostderr -v=9 2>&1 | tail -200
 
   python-e2e:
     name: "Python SDK E2E"
@@ -210,7 +217,7 @@ jobs:
         run: pulumi stack rm "e2e-${{ github.run_id }}" --yes --non-interactive
 
   typescript:
-    name: "TypeScript SDK"
+    name: "TypeScript SDK (${{ matrix.resource }})"
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -220,7 +227,20 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     defaults:
       run:
-        working-directory: typescript
+        working-directory: typescript/preview
+    strategy:
+      matrix:
+        resource:
+          - environment
+          - environment-group
+          - dlp-policy
+          - billing-policy
+          - managed-environment
+          - environment-backup
+          - role-assignment
+          - isv-contract
+          - environment-settings
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
 
@@ -235,9 +255,6 @@ jobs:
 
       - name: Type check
         run: npx tsc --noEmit
-
-      - name: Verify runtime import
-        run: node -e "const pp = require('@rpothin/powerplatform'); console.log('Runtime import OK:', Object.keys(pp).length, 'exports')"
 
       - name: Set up Python (for provider plugin)
         uses: actions/setup-python@v5
@@ -260,15 +277,15 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
-      - name: Preview (optional)
+      - name: Preview
         if: env.AZURE_CLIENT_ID != ''
         run: |
           set -o pipefail
-          pulumi stack init dev --non-interactive
-          pulumi preview --non-interactive --stack dev --logtostderr -v=9 2>&1 | tail -200
+          pulumi stack init ${{ matrix.resource }} --non-interactive
+          pulumi preview --non-interactive --stack ${{ matrix.resource }} --logtostderr -v=9 2>&1 | tail -200
 
   dotnet:
-    name: ".NET SDK"
+    name: ".NET SDK (${{ matrix.resource }})"
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -278,7 +295,20 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     defaults:
       run:
-        working-directory: dotnet
+        working-directory: dotnet/preview
+    strategy:
+      matrix:
+        resource:
+          - environment
+          - environment-group
+          - dlp-policy
+          - billing-policy
+          - managed-environment
+          - environment-backup
+          - role-assignment
+          - isv-contract
+          - environment-settings
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
 
@@ -334,14 +364,14 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
-      - name: Preview (optional)
+      - name: Preview
         if: env.AZURE_CLIENT_ID != ''
         run: |
-          pulumi stack init dev --non-interactive
-          pulumi preview --non-interactive --stack dev
+          pulumi stack init ${{ matrix.resource }} --non-interactive
+          pulumi preview --non-interactive --stack ${{ matrix.resource }}
 
   go:
-    name: "Go SDK"
+    name: "Go SDK (${{ matrix.resource }})"
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -351,7 +381,20 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     defaults:
       run:
-        working-directory: go
+        working-directory: go/preview
+    strategy:
+      matrix:
+        resource:
+          - environment
+          - environment-group
+          - dlp-policy
+          - billing-policy
+          - managed-environment
+          - environment-backup
+          - role-assignment
+          - isv-contract
+          - environment-settings
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
 
@@ -389,14 +432,14 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
-      - name: Preview (optional)
+      - name: Preview
         if: env.AZURE_CLIENT_ID != ''
         run: |
-          pulumi stack init dev --non-interactive
-          pulumi preview --non-interactive --stack dev
+          pulumi stack init ${{ matrix.resource }} --non-interactive
+          pulumi preview --non-interactive --stack ${{ matrix.resource }}
 
   java:
-    name: "Java SDK"
+    name: "Java SDK (${{ matrix.resource }})"
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -406,7 +449,20 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     defaults:
       run:
-        working-directory: java
+        working-directory: java/preview
+    strategy:
+      matrix:
+        resource:
+          - environment
+          - environment-group
+          - dlp-policy
+          - billing-policy
+          - managed-environment
+          - environment-backup
+          - role-assignment
+          - isv-contract
+          - environment-settings
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
 
@@ -437,7 +493,7 @@ jobs:
           exit 1
 
       - name: Build
-        run: ./gradlew build --stacktrace -PsdkVersion="${{ env.SDK_VERSION }}"
+        run: ../gradlew build --stacktrace -PsdkVersion="${{ env.SDK_VERSION }}"
 
       - name: Set up Python (for provider plugin)
         uses: actions/setup-python@v5
@@ -460,11 +516,11 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
-      - name: Preview (optional)
+      - name: Preview
         if: env.AZURE_CLIENT_ID != ''
         env:
           ORG_GRADLE_PROJECT_sdkVersion: ${{ env.SDK_VERSION }}
         run: |
-          pulumi stack init dev --non-interactive
-          pulumi preview --non-interactive --stack dev
+          pulumi stack init ${{ matrix.resource }} --non-interactive
+          pulumi preview --non-interactive --stack ${{ matrix.resource }}
 

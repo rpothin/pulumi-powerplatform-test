@@ -1,0 +1,3 @@
+config:
+  preview-typescript:resource: dlp-policy
+  preview-typescript:name: preview-dlp-policy

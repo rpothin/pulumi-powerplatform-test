@@ -1,0 +1,5 @@
+config:
+  preview-python:resource: environment
+  preview-python:displayName: Preview Test
+  preview-python:location: unitedstates
+  preview-python:environmentType: Sandbox

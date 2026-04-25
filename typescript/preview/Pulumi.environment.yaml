@@ -1,0 +1,5 @@
+config:
+  preview-typescript:resource: environment
+  preview-typescript:displayName: Preview Test
+  preview-typescript:location: unitedstates
+  preview-typescript:environmentType: Sandbox
