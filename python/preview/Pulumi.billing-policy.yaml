@@ -1,0 +1,4 @@
+config:
+  preview-python:resource: billing-policy
+  preview-python:name: preview-billing-policy
+  preview-python:location: unitedstates

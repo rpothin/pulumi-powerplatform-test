@@ -1,0 +1,5 @@
+config:
+  preview-java:resource: environment
+  preview-java:displayName: Preview Test
+  preview-java:location: unitedstates
+  preview-java:environmentType: Sandbox

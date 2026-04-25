@@ -1,0 +1,3 @@
+name: preview-dotnet
+runtime: dotnet
+description: Matrix preview tests for the published .NET SDK

@@ -1,0 +1,4 @@
+config:
+  preview-typescript:resource: billing-policy
+  preview-typescript:name: preview-billing-policy
+  preview-typescript:location: unitedstates

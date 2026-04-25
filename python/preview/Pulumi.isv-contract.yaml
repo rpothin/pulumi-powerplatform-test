@@ -1,0 +1,4 @@
+config:
+  preview-python:resource: isv-contract
+  preview-python:name: preview-isv-contract
+  preview-python:geo: unitedstates

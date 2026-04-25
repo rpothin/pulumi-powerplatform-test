@@ -1,0 +1,6 @@
+name: preview-python
+runtime:
+  name: python
+  options:
+    virtualenv: .venv
+description: Matrix preview tests for the published Python SDK

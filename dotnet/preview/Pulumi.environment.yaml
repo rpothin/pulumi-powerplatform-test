@@ -1,0 +1,5 @@
+config:
+  preview-dotnet:resource: environment
+  preview-dotnet:displayName: Preview Test
+  preview-dotnet:location: unitedstates
+  preview-dotnet:environmentType: Sandbox

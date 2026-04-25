@@ -1,0 +1,5 @@
+config:
+  preview-go:resource: role-assignment
+  preview-go:principalObjectId: 00000000-0000-0000-0000-000000000000
+  preview-go:principalType: User
+  preview-go:roleDefinitionId: 00000000-0000-0000-0000-000000000000

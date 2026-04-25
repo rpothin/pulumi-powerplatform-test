@@ -1,0 +1,4 @@
+config:
+  preview-go:resource: environment-backup
+  preview-go:environmentId: 00000000-0000-0000-0000-000000000000
+  preview-go:label: preview-backup

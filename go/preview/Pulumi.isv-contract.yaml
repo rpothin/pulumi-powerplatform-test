@@ -1,0 +1,4 @@
+config:
+  preview-go:resource: isv-contract
+  preview-go:name: preview-isv-contract
+  preview-go:geo: unitedstates
