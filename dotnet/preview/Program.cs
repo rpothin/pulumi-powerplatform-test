@@ -7,7 +7,7 @@ using EnvironmentArgs = Pulumi.Powerplatform.EnvironmentArgs;
 
 return await Deployment.RunAsync(() =>
 {
-    var config = new Config();
+    var config = new Pulumi.Config();
     var resource = config.Require("resource");
 
     if (resource == "environment")
