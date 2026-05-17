@@ -154,28 +154,28 @@ public class App {
                 }
                 case "get-environments": {
                     var result = PowerplatformFunctions.getEnvironments(GetEnvironmentsArgs.builder().build());
-                    ctx.export("count", result.thenApply(r -> r.environments().size()));
+                    ctx.export("count", result.applyValue(r -> r.environments().size()));
                     break;
                 }
                 case "get-connectors": {
                     var result = PowerplatformFunctions.getConnectors(GetConnectorsArgs.builder()
                         .environmentId(DUMMY_UUID)
                         .build());
-                    ctx.export("count", result.thenApply(r -> r.connectors().size()));
+                    ctx.export("count", result.applyValue(r -> r.connectors().size()));
                     break;
                 }
                 case "get-apps": {
                     var result = PowerplatformFunctions.getApps(GetAppsArgs.builder()
                         .environmentId(DUMMY_UUID)
                         .build());
-                    ctx.export("count", result.thenApply(r -> r.apps().size()));
+                    ctx.export("count", result.applyValue(r -> r.apps().size()));
                     break;
                 }
                 case "get-flows": {
                     var result = PowerplatformFunctions.getFlows(GetFlowsArgs.builder()
                         .environmentId(DUMMY_UUID)
                         .build());
-                    ctx.export("count", result.thenApply(r -> r.flows().size()));
+                    ctx.export("count", result.applyValue(r -> r.flows().size()));
                     break;
                 }
                 case "get-data-records": {
@@ -183,7 +183,7 @@ public class App {
                         .environmentId(DUMMY_UUID)
                         .entityCollection("accounts")
                         .build());
-                    ctx.export("count", result.thenApply(r -> r.records().size()));
+                    ctx.export("count", result.applyValue(r -> r.records().size()));
                     break;
                 }
                 default:
