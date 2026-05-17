@@ -62,6 +62,16 @@ jobs:
           - role-assignment
           - isv-contract
           - environment-settings
+          - tenant-settings
+          - enterprise-policy-link
+          - admin-management-application
+          - data-record
+          - environment-application-admin
+          - get-environments
+          - get-connectors
+          - get-apps
+          - get-flows
+          - get-data-records
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -264,6 +274,16 @@ jobs:
           - role-assignment
           - isv-contract
           - environment-settings
+          - tenant-settings
+          - enterprise-policy-link
+          - admin-management-application
+          - data-record
+          - environment-application-admin
+          - get-environments
+          - get-connectors
+          - get-apps
+          - get-flows
+          - get-data-records
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -334,6 +354,16 @@ jobs:
           - role-assignment
           - isv-contract
           - environment-settings
+          - tenant-settings
+          - enterprise-policy-link
+          - admin-management-application
+          - data-record
+          - environment-application-admin
+          - get-environments
+          - get-connectors
+          - get-apps
+          - get-flows
+          - get-data-records
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -422,6 +452,16 @@ jobs:
           - role-assignment
           - isv-contract
           - environment-settings
+          - tenant-settings
+          - enterprise-policy-link
+          - admin-management-application
+          - data-record
+          - environment-application-admin
+          - get-environments
+          - get-connectors
+          - get-apps
+          - get-flows
+          - get-data-records
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -492,6 +532,16 @@ jobs:
           - role-assignment
           - isv-contract
           - environment-settings
+          - tenant-settings
+          - enterprise-policy-link
+          - admin-management-application
+          - data-record
+          - environment-application-admin
+          - get-environments
+          - get-connectors
+          - get-apps
+          - get-flows
+          - get-data-records
       fail-fast: false
     steps:
       - uses: actions/checkout@v4

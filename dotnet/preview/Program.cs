@@ -10,6 +10,9 @@ return await Deployment.RunAsync(() =>
     var config = new Pulumi.Config();
     var resource = config.Require("resource");
 
+    const string DummyEnvId = "00000000-0000-0000-0000-000000000000";
+    const string DummyUuid = "00000000-0000-0000-0000-000000000000";
+
     if (resource == "environment")
     {
         var r = new Environment("preview", new EnvironmentArgs
@@ -88,6 +91,76 @@ return await Deployment.RunAsync(() =>
             EnvironmentId = config.Require("environmentId"),
         });
         return new Dictionary<string, object?> { ["id"] = r.Id };
+    }
+    if (resource == "tenant-settings")
+    {
+        var r = new TenantSettings("preview", new TenantSettingsArgs {});
+        return new Dictionary<string, object?> { ["id"] = r.Id };
+    }
+    if (resource == "enterprise-policy-link")
+    {
+        var r = new EnterprisePolicyLink("preview", new EnterprisePolicyLinkArgs
+        {
+            EnvironmentId = DummyEnvId,
+            PolicyType = "Encryption",
+            SystemId = "/regions/unitedstates/providers/Microsoft.PowerPlatform/enterprisePolicies/" + DummyUuid,
+        });
+        return new Dictionary<string, object?> { ["id"] = r.Id };
+    }
+    if (resource == "admin-management-application")
+    {
+        var r = new AdminManagementApplication("preview", new AdminManagementApplicationArgs
+        {
+            ApplicationId = DummyUuid,
+        });
+        return new Dictionary<string, object?> { ["id"] = r.Id };
+    }
+    if (resource == "data-record")
+    {
+        var r = new DataRecord("preview", new DataRecordArgs
+        {
+            EnvironmentId = DummyEnvId,
+            TableLogicalName = "accounts",
+        });
+        return new Dictionary<string, object?> { ["id"] = r.Id };
+    }
+    if (resource == "environment-application-admin")
+    {
+        var r = new EnvironmentApplicationAdmin("preview", new EnvironmentApplicationAdminArgs
+        {
+            EnvironmentId = DummyEnvId,
+            ApplicationId = DummyUuid,
+        });
+        return new Dictionary<string, object?> { ["id"] = r.Id };
+    }
+    if (resource == "get-environments")
+    {
+        var result = GetEnvironments.Invoke();
+        return new Dictionary<string, object?> { ["environments"] = result.Apply(r => r.Environments) };
+    }
+    if (resource == "get-connectors")
+    {
+        var result = GetConnectors.Invoke(new GetConnectorsInvokeArgs { EnvironmentId = DummyEnvId });
+        return new Dictionary<string, object?> { ["connectors"] = result.Apply(r => r.Connectors) };
+    }
+    if (resource == "get-apps")
+    {
+        var result = GetApps.Invoke(new GetAppsInvokeArgs { EnvironmentId = DummyEnvId });
+        return new Dictionary<string, object?> { ["apps"] = result.Apply(r => r.Apps) };
+    }
+    if (resource == "get-flows")
+    {
+        var result = GetFlows.Invoke(new GetFlowsInvokeArgs { EnvironmentId = DummyEnvId });
+        return new Dictionary<string, object?> { ["flows"] = result.Apply(r => r.Flows) };
+    }
+    if (resource == "get-data-records")
+    {
+        var result = GetDataRecords.Invoke(new GetDataRecordsInvokeArgs
+        {
+            EnvironmentId = DummyEnvId,
+            EntityCollection = "accounts",
+        });
+        return new Dictionary<string, object?> { ["records"] = result.Apply(r => r.Records) };
     }
     throw new InvalidOperationException($"Unknown resource: {resource}");
 });

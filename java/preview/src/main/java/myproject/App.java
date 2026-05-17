@@ -1,26 +1,44 @@
 package myproject;
 
 import com.pulumi.Pulumi;
-import io.github.rpothin.powerplatform.Environment;
-import io.github.rpothin.powerplatform.EnvironmentArgs;
-import io.github.rpothin.powerplatform.EnvironmentGroup;
-import io.github.rpothin.powerplatform.EnvironmentGroupArgs;
-import io.github.rpothin.powerplatform.DlpPolicy;
-import io.github.rpothin.powerplatform.DlpPolicyArgs;
+import io.github.rpothin.powerplatform.AdminManagementApplication;
+import io.github.rpothin.powerplatform.AdminManagementApplicationArgs;
 import io.github.rpothin.powerplatform.BillingPolicy;
 import io.github.rpothin.powerplatform.BillingPolicyArgs;
-import io.github.rpothin.powerplatform.ManagedEnvironment;
-import io.github.rpothin.powerplatform.ManagedEnvironmentArgs;
+import io.github.rpothin.powerplatform.DataRecord;
+import io.github.rpothin.powerplatform.DataRecordArgs;
+import io.github.rpothin.powerplatform.DlpPolicy;
+import io.github.rpothin.powerplatform.DlpPolicyArgs;
+import io.github.rpothin.powerplatform.EnterprisePolicyLink;
+import io.github.rpothin.powerplatform.EnterprisePolicyLinkArgs;
+import io.github.rpothin.powerplatform.Environment;
+import io.github.rpothin.powerplatform.EnvironmentArgs;
+import io.github.rpothin.powerplatform.EnvironmentApplicationAdmin;
+import io.github.rpothin.powerplatform.EnvironmentApplicationAdminArgs;
 import io.github.rpothin.powerplatform.EnvironmentBackup;
 import io.github.rpothin.powerplatform.EnvironmentBackupArgs;
-import io.github.rpothin.powerplatform.RoleAssignment;
-import io.github.rpothin.powerplatform.RoleAssignmentArgs;
-import io.github.rpothin.powerplatform.IsvContract;
-import io.github.rpothin.powerplatform.IsvContractArgs;
+import io.github.rpothin.powerplatform.EnvironmentGroup;
+import io.github.rpothin.powerplatform.EnvironmentGroupArgs;
 import io.github.rpothin.powerplatform.EnvironmentSettings;
 import io.github.rpothin.powerplatform.EnvironmentSettingsArgs;
+import io.github.rpothin.powerplatform.IsvContract;
+import io.github.rpothin.powerplatform.IsvContractArgs;
+import io.github.rpothin.powerplatform.ManagedEnvironment;
+import io.github.rpothin.powerplatform.ManagedEnvironmentArgs;
+import io.github.rpothin.powerplatform.PowerplatformFunctions;
+import io.github.rpothin.powerplatform.RoleAssignment;
+import io.github.rpothin.powerplatform.RoleAssignmentArgs;
+import io.github.rpothin.powerplatform.TenantSettings;
+import io.github.rpothin.powerplatform.TenantSettingsArgs;
+import io.github.rpothin.powerplatform.inputs.GetAppsArgs;
+import io.github.rpothin.powerplatform.inputs.GetConnectorsArgs;
+import io.github.rpothin.powerplatform.inputs.GetDataRecordsArgs;
+import io.github.rpothin.powerplatform.inputs.GetEnvironmentsArgs;
+import io.github.rpothin.powerplatform.inputs.GetFlowsArgs;
 
 public class App {
+    private static final String DUMMY_UUID = "00000000-0000-0000-0000-000000000000";
+
     public static void main(String[] args) {
         Pulumi.run(ctx -> {
             var config = ctx.config();
@@ -95,6 +113,77 @@ public class App {
                         .environmentId(config.require("environmentId"))
                         .build());
                     ctx.export("id", r.id());
+                    break;
+                }
+                case "tenant-settings": {
+                    var r = new TenantSettings("preview", TenantSettingsArgs.builder().build());
+                    ctx.export("id", r.id());
+                    break;
+                }
+                case "enterprise-policy-link": {
+                    var r = new EnterprisePolicyLink("preview", EnterprisePolicyLinkArgs.builder()
+                        .environmentId(DUMMY_UUID)
+                        .policyType("Encryption")
+                        .systemId("/regions/unitedstates/providers/Microsoft.PowerPlatform/enterprisePolicies/" + DUMMY_UUID)
+                        .build());
+                    ctx.export("id", r.id());
+                    break;
+                }
+                case "admin-management-application": {
+                    var r = new AdminManagementApplication("preview", AdminManagementApplicationArgs.builder()
+                        .applicationId(DUMMY_UUID)
+                        .build());
+                    ctx.export("id", r.id());
+                    break;
+                }
+                case "data-record": {
+                    var r = new DataRecord("preview", DataRecordArgs.builder()
+                        .environmentId(DUMMY_UUID)
+                        .tableLogicalName("accounts")
+                        .build());
+                    ctx.export("id", r.id());
+                    break;
+                }
+                case "environment-application-admin": {
+                    var r = new EnvironmentApplicationAdmin("preview", EnvironmentApplicationAdminArgs.builder()
+                        .environmentId(DUMMY_UUID)
+                        .applicationId(DUMMY_UUID)
+                        .build());
+                    ctx.export("id", r.id());
+                    break;
+                }
+                case "get-environments": {
+                    var result = PowerplatformFunctions.getEnvironments(GetEnvironmentsArgs.builder().build());
+                    ctx.export("count", result.thenApply(r -> r.environments().size()));
+                    break;
+                }
+                case "get-connectors": {
+                    var result = PowerplatformFunctions.getConnectors(GetConnectorsArgs.builder()
+                        .environmentId(DUMMY_UUID)
+                        .build());
+                    ctx.export("count", result.thenApply(r -> r.connectors().size()));
+                    break;
+                }
+                case "get-apps": {
+                    var result = PowerplatformFunctions.getApps(GetAppsArgs.builder()
+                        .environmentId(DUMMY_UUID)
+                        .build());
+                    ctx.export("count", result.thenApply(r -> r.apps().size()));
+                    break;
+                }
+                case "get-flows": {
+                    var result = PowerplatformFunctions.getFlows(GetFlowsArgs.builder()
+                        .environmentId(DUMMY_UUID)
+                        .build());
+                    ctx.export("count", result.thenApply(r -> r.flows().size()));
+                    break;
+                }
+                case "get-data-records": {
+                    var result = PowerplatformFunctions.getDataRecords(GetDataRecordsArgs.builder()
+                        .environmentId(DUMMY_UUID)
+                        .entityCollection("accounts")
+                        .build());
+                    ctx.export("count", result.thenApply(r -> r.records().size()));
                     break;
                 }
                 default:
