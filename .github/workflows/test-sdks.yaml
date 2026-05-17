@@ -5,28 +5,48 @@ on:
     inputs:
       version:
         description: "SDK version to test (e.g. 0.1.16)"
-        required: true
-        default: "0.1.41"
+        required: false
   repository_dispatch:
     types: [test-sdks]
   schedule:
     - cron: "0 8 * * 1" # Weekly on Monday at 08:00 UTC
 
 env:
-  SDK_VERSION: ${{ github.event.inputs.version || github.event.client_payload.version || '0.1.41' }}
   PULUMI_BACKEND_URL: "file://~"
   PULUMI_CONFIG_PASSPHRASE: "test"
 
 jobs:
+  resolve-version:
+    name: "Resolve SDK version"
+    runs-on: ubuntu-latest
+    outputs:
+      sdk_version: ${{ steps.resolve.outputs.sdk_version }}
+    steps:
+      - name: Resolve version
+        id: resolve
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ github.event.inputs.version || github.event.client_payload.version }}"
+          if [ -z "$VERSION" ]; then
+            VERSION=$(gh api repos/rpothin/pulumi-powerplatform/releases/latest --jq '.tag_name | ltrimstr("v")')
+            echo "No version provided — using latest from rpothin/pulumi-powerplatform: $VERSION"
+          else
+            echo "Using provided version: $VERSION"
+          fi
+          echo "sdk_version=$VERSION" >> "$GITHUB_OUTPUT"
+
   python:
     name: "Python SDK (${{ matrix.resource }})"
     runs-on: ubuntu-latest
+    needs: [resolve-version]
     permissions:
       id-token: write
       contents: read
     env:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
     defaults:
       run:
         working-directory: python/preview
@@ -85,12 +105,14 @@ jobs:
     name: "Python SDK E2E"
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    needs: [resolve-version]
     permissions:
       id-token: write
       contents: read
     env:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
     defaults:
       run:
         working-directory: python
@@ -219,12 +241,14 @@ jobs:
   typescript:
     name: "TypeScript SDK (${{ matrix.resource }})"
     runs-on: ubuntu-latest
+    needs: [resolve-version]
     permissions:
       id-token: write
       contents: read
     env:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
     defaults:
       run:
         working-directory: typescript/preview
@@ -287,12 +311,14 @@ jobs:
   dotnet:
     name: ".NET SDK (${{ matrix.resource }})"
     runs-on: ubuntu-latest
+    needs: [resolve-version]
     permissions:
       id-token: write
       contents: read
     env:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
     defaults:
       run:
         working-directory: dotnet/preview
@@ -373,12 +399,14 @@ jobs:
   go:
     name: "Go SDK (${{ matrix.resource }})"
     runs-on: ubuntu-latest
+    needs: [resolve-version]
     permissions:
       id-token: write
       contents: read
     env:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
     defaults:
       run:
         working-directory: go/preview
@@ -441,12 +469,14 @@ jobs:
   java:
     name: "Java SDK (${{ matrix.resource }})"
     runs-on: ubuntu-latest
+    needs: [resolve-version]
     permissions:
       id-token: write
       contents: read
     env:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
     defaults:
       run:
         working-directory: java/preview
