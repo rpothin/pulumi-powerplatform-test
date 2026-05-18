@@ -124,22 +124,22 @@ switch (resource) {
         break;
     }
     case "get-connectors": {
-        const result = pp.getConnectorsOutput({ environmentId: DUMMY_ENV_ID });
+        const result = pp.getConnectorsOutput({ environmentId: config.get("environmentId") ?? DUMMY_ENV_ID });
         outputs["connectors"] = result.connectors;
         break;
     }
     case "get-apps": {
-        const result = pp.getAppsOutput({ environmentId: DUMMY_ENV_ID });
+        const result = pp.getAppsOutput({ environmentId: config.get("environmentId") ?? DUMMY_ENV_ID });
         outputs["apps"] = result.apps;
         break;
     }
     case "get-flows": {
-        const result = pp.getFlowsOutput({ environmentId: DUMMY_ENV_ID });
+        const result = pp.getFlowsOutput({ environmentId: config.get("environmentId") ?? DUMMY_ENV_ID });
         outputs["flows"] = result.flows;
         break;
     }
     case "get-data-records": {
-        const result = pp.getDataRecordsOutput({ environmentId: DUMMY_ENV_ID, entityCollection: "accounts" });
+        const result = pp.getDataRecordsOutput({ environmentId: config.get("environmentId") ?? DUMMY_ENV_ID, entityCollection: "accounts" });
         outputs["records"] = result.records;
         break;
     }

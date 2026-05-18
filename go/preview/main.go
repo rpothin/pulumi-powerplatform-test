@@ -163,29 +163,37 @@ return err
 ctx.Export("count", pulumi.Int(len(result.Environments)))
 
 case "get-connectors":
-result, err := pp.GetConnectors(ctx, &pp.GetConnectorsArgs{EnvironmentId: dummyUUID}, nil)
+envId := cfg.Get("environmentId")
+if envId == "" { envId = dummyUUID }
+result, err := pp.GetConnectors(ctx, &pp.GetConnectorsArgs{EnvironmentId: envId}, nil)
 if err != nil {
 return err
 }
 ctx.Export("count", pulumi.Int(len(result.Connectors)))
 
 case "get-apps":
-result, err := pp.GetApps(ctx, &pp.GetAppsArgs{EnvironmentId: dummyUUID}, nil)
+envId := cfg.Get("environmentId")
+if envId == "" { envId = dummyUUID }
+result, err := pp.GetApps(ctx, &pp.GetAppsArgs{EnvironmentId: envId}, nil)
 if err != nil {
 return err
 }
 ctx.Export("count", pulumi.Int(len(result.Apps)))
 
 case "get-flows":
-result, err := pp.GetFlows(ctx, &pp.GetFlowsArgs{EnvironmentId: dummyUUID}, nil)
+envId := cfg.Get("environmentId")
+if envId == "" { envId = dummyUUID }
+result, err := pp.GetFlows(ctx, &pp.GetFlowsArgs{EnvironmentId: envId}, nil)
 if err != nil {
 return err
 }
 ctx.Export("count", pulumi.Int(len(result.Flows)))
 
 case "get-data-records":
+envId := cfg.Get("environmentId")
+if envId == "" { envId = dummyUUID }
 result, err := pp.GetDataRecords(ctx, &pp.GetDataRecordsArgs{
-EnvironmentId:    dummyUUID,
+EnvironmentId:    envId,
 EntityCollection: "accounts",
 }, nil)
 if err != nil {
