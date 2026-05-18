@@ -140,24 +140,24 @@ return await Deployment.RunAsync(() =>
     }
     if (resource == "get-connectors")
     {
-        var result = GetConnectors.Invoke(new GetConnectorsInvokeArgs { EnvironmentId = DummyEnvId });
+        var result = GetConnectors.Invoke(new GetConnectorsInvokeArgs { EnvironmentId = config.Get("environmentId") ?? DummyEnvId });
         return new Dictionary<string, object?> { ["connectors"] = result.Apply(r => r.Connectors) };
     }
     if (resource == "get-apps")
     {
-        var result = GetApps.Invoke(new GetAppsInvokeArgs { EnvironmentId = DummyEnvId });
+        var result = GetApps.Invoke(new GetAppsInvokeArgs { EnvironmentId = config.Get("environmentId") ?? DummyEnvId });
         return new Dictionary<string, object?> { ["apps"] = result.Apply(r => r.Apps) };
     }
     if (resource == "get-flows")
     {
-        var result = GetFlows.Invoke(new GetFlowsInvokeArgs { EnvironmentId = DummyEnvId });
+        var result = GetFlows.Invoke(new GetFlowsInvokeArgs { EnvironmentId = config.Get("environmentId") ?? DummyEnvId });
         return new Dictionary<string, object?> { ["flows"] = result.Apply(r => r.Flows) };
     }
     if (resource == "get-data-records")
     {
         var result = GetDataRecords.Invoke(new GetDataRecordsInvokeArgs
         {
-            EnvironmentId = DummyEnvId,
+            EnvironmentId = config.Get("environmentId") ?? DummyEnvId,
             EntityCollection = "accounts",
         });
         return new Dictionary<string, object?> { ["records"] = result.Apply(r => r.Records) };

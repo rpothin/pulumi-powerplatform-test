@@ -159,28 +159,28 @@ public class App {
                 }
                 case "get-connectors": {
                     var result = PowerplatformFunctions.getConnectors(GetConnectorsArgs.builder()
-                        .environmentId(DUMMY_UUID)
+                        .environmentId(config.get("environmentId").orElse(DUMMY_UUID))
                         .build());
                     ctx.export("count", result.applyValue(r -> r.connectors().size()));
                     break;
                 }
                 case "get-apps": {
                     var result = PowerplatformFunctions.getApps(GetAppsArgs.builder()
-                        .environmentId(DUMMY_UUID)
+                        .environmentId(config.get("environmentId").orElse(DUMMY_UUID))
                         .build());
                     ctx.export("count", result.applyValue(r -> r.apps().size()));
                     break;
                 }
                 case "get-flows": {
                     var result = PowerplatformFunctions.getFlows(GetFlowsArgs.builder()
-                        .environmentId(DUMMY_UUID)
+                        .environmentId(config.get("environmentId").orElse(DUMMY_UUID))
                         .build());
                     ctx.export("count", result.applyValue(r -> r.flows().size()));
                     break;
                 }
                 case "get-data-records": {
                     var result = PowerplatformFunctions.getDataRecords(GetDataRecordsArgs.builder()
-                        .environmentId(DUMMY_UUID)
+                        .environmentId(config.get("environmentId").orElse(DUMMY_UUID))
                         .entityCollection("accounts")
                         .build());
                     ctx.export("count", result.applyValue(r -> r.records().size()));

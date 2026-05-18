@@ -101,18 +101,22 @@ elif resource == "environment-application-admin":
     pulumi.export("id", r.id)
 elif resource == "get-environments":
     result = pp.get_environments()
-    pulumi.export("environments", result.environments)
+    pulumi.export("environments", result["environments"])
 elif resource == "get-connectors":
-    result = pp.get_connectors(environment_id=_DUMMY_ENV_ID)
-    pulumi.export("connectors", result.connectors)
+    env_id = config.get("environmentId") or _DUMMY_ENV_ID
+    result = pp.get_connectors(environment_id=env_id)
+    pulumi.export("connectors", result["connectors"])
 elif resource == "get-apps":
-    result = pp.get_apps(environment_id=_DUMMY_ENV_ID)
-    pulumi.export("apps", result.apps)
+    env_id = config.get("environmentId") or _DUMMY_ENV_ID
+    result = pp.get_apps(environment_id=env_id)
+    pulumi.export("apps", result["apps"])
 elif resource == "get-flows":
-    result = pp.get_flows(environment_id=_DUMMY_ENV_ID)
-    pulumi.export("flows", result.flows)
+    env_id = config.get("environmentId") or _DUMMY_ENV_ID
+    result = pp.get_flows(environment_id=env_id)
+    pulumi.export("flows", result["flows"])
 elif resource == "get-data-records":
-    result = pp.get_data_records(environment_id=_DUMMY_ENV_ID, entity_collection="accounts")
-    pulumi.export("records", result.records)
+    env_id = config.get("environmentId") or _DUMMY_ENV_ID
+    result = pp.get_data_records(environment_id=env_id, entity_collection="accounts")
+    pulumi.export("records", result.value["records"])
 else:
     raise ValueError(f"Unknown resource: {resource}")
