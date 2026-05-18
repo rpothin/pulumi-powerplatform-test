@@ -47,6 +47,7 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
+      POWERPLATFORM_TEST_ENVIRONMENT_ID: ${{ secrets.POWERPLATFORM_TEST_ENVIRONMENT_ID }}
     defaults:
       run:
         working-directory: python/preview
@@ -93,7 +94,15 @@ jobs:
         with:
           pulumi-version: "latest"
 
+      - name: Cache Pulumi provider plugin
+        id: cache-pulumi-plugin
+        uses: actions/cache@v4
+        with:
+          path: ~/.pulumi/plugins
+          key: pulumi-plugin-powerplatform-v${{ env.SDK_VERSION }}-${{ runner.os }}
+
       - name: Install provider plugin
+        if: steps.cache-pulumi-plugin.outputs.cache-hit != 'true'
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
 
       - name: Azure login (OIDC)
@@ -109,6 +118,13 @@ jobs:
         run: |
           set -o pipefail
           pulumi stack init ${{ matrix.resource }} --non-interactive
+          if [ "${{ matrix.resource }}" = "get-data-records" ]; then
+            if [ -z "$POWERPLATFORM_TEST_ENVIRONMENT_ID" ]; then
+              echo "Skipping get-data-records preview: POWERPLATFORM_TEST_ENVIRONMENT_ID secret not configured"
+              exit 0
+            fi
+            pulumi config set preview-python:environmentId "$POWERPLATFORM_TEST_ENVIRONMENT_ID"
+          fi
           pulumi preview --non-interactive --stack ${{ matrix.resource }} --logtostderr -v=9 2>&1 | tail -200
 
   python-e2e:
@@ -259,6 +275,7 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
+      POWERPLATFORM_TEST_ENVIRONMENT_ID: ${{ secrets.POWERPLATFORM_TEST_ENVIRONMENT_ID }}
     defaults:
       run:
         working-directory: typescript/preview
@@ -310,7 +327,15 @@ jobs:
         with:
           pulumi-version: "latest"
 
+      - name: Cache Pulumi provider plugin
+        id: cache-pulumi-plugin
+        uses: actions/cache@v4
+        with:
+          path: ~/.pulumi/plugins
+          key: pulumi-plugin-powerplatform-v${{ env.SDK_VERSION }}-${{ runner.os }}
+
       - name: Install provider plugin
+        if: steps.cache-pulumi-plugin.outputs.cache-hit != 'true'
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
 
       - name: Azure login (OIDC)
@@ -326,6 +351,13 @@ jobs:
         run: |
           set -o pipefail
           pulumi stack init ${{ matrix.resource }} --non-interactive
+          if [ "${{ matrix.resource }}" = "get-data-records" ]; then
+            if [ -z "$POWERPLATFORM_TEST_ENVIRONMENT_ID" ]; then
+              echo "Skipping get-data-records preview: POWERPLATFORM_TEST_ENVIRONMENT_ID secret not configured"
+              exit 0
+            fi
+            pulumi config set preview-typescript:environmentId "$POWERPLATFORM_TEST_ENVIRONMENT_ID"
+          fi
           pulumi preview --non-interactive --stack ${{ matrix.resource }} --logtostderr -v=9 2>&1 | tail -200
 
   dotnet:
@@ -339,6 +371,7 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
+      POWERPLATFORM_TEST_ENVIRONMENT_ID: ${{ secrets.POWERPLATFORM_TEST_ENVIRONMENT_ID }}
     defaults:
       run:
         working-directory: dotnet/preview
@@ -409,7 +442,15 @@ jobs:
         with:
           pulumi-version: "latest"
 
+      - name: Cache Pulumi provider plugin
+        id: cache-pulumi-plugin
+        uses: actions/cache@v4
+        with:
+          path: ~/.pulumi/plugins
+          key: pulumi-plugin-powerplatform-v${{ env.SDK_VERSION }}-${{ runner.os }}
+
       - name: Install provider plugin
+        if: steps.cache-pulumi-plugin.outputs.cache-hit != 'true'
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
 
       - name: Azure login (OIDC)
@@ -424,6 +465,13 @@ jobs:
         if: env.AZURE_CLIENT_ID != ''
         run: |
           pulumi stack init ${{ matrix.resource }} --non-interactive
+          if [ "${{ matrix.resource }}" = "get-data-records" ]; then
+            if [ -z "$POWERPLATFORM_TEST_ENVIRONMENT_ID" ]; then
+              echo "Skipping get-data-records preview: POWERPLATFORM_TEST_ENVIRONMENT_ID secret not configured"
+              exit 0
+            fi
+            pulumi config set preview-dotnet:environmentId "$POWERPLATFORM_TEST_ENVIRONMENT_ID"
+          fi
           pulumi preview --non-interactive --stack ${{ matrix.resource }}
 
   go:
@@ -437,6 +485,7 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
+      POWERPLATFORM_TEST_ENVIRONMENT_ID: ${{ secrets.POWERPLATFORM_TEST_ENVIRONMENT_ID }}
     defaults:
       run:
         working-directory: go/preview
@@ -489,7 +538,15 @@ jobs:
         with:
           pulumi-version: "latest"
 
+      - name: Cache Pulumi provider plugin
+        id: cache-pulumi-plugin
+        uses: actions/cache@v4
+        with:
+          path: ~/.pulumi/plugins
+          key: pulumi-plugin-powerplatform-v${{ env.SDK_VERSION }}-${{ runner.os }}
+
       - name: Install provider plugin
+        if: steps.cache-pulumi-plugin.outputs.cache-hit != 'true'
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
 
       - name: Azure login (OIDC)
@@ -504,6 +561,13 @@ jobs:
         if: env.AZURE_CLIENT_ID != ''
         run: |
           pulumi stack init ${{ matrix.resource }} --non-interactive
+          if [ "${{ matrix.resource }}" = "get-data-records" ]; then
+            if [ -z "$POWERPLATFORM_TEST_ENVIRONMENT_ID" ]; then
+              echo "Skipping get-data-records preview: POWERPLATFORM_TEST_ENVIRONMENT_ID secret not configured"
+              exit 0
+            fi
+            pulumi config set preview-go:environmentId "$POWERPLATFORM_TEST_ENVIRONMENT_ID"
+          fi
           pulumi preview --non-interactive --stack ${{ matrix.resource }}
 
   java:
@@ -517,6 +581,7 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
+      POWERPLATFORM_TEST_ENVIRONMENT_ID: ${{ secrets.POWERPLATFORM_TEST_ENVIRONMENT_ID }}
     defaults:
       run:
         working-directory: java/preview
@@ -585,7 +650,15 @@ jobs:
         with:
           pulumi-version: "latest"
 
+      - name: Cache Pulumi provider plugin
+        id: cache-pulumi-plugin
+        uses: actions/cache@v4
+        with:
+          path: ~/.pulumi/plugins
+          key: pulumi-plugin-powerplatform-v${{ env.SDK_VERSION }}-${{ runner.os }}
+
       - name: Install provider plugin
+        if: steps.cache-pulumi-plugin.outputs.cache-hit != 'true'
         run: pulumi plugin install resource powerplatform "v${{ env.SDK_VERSION }}" --server "github://api.github.com/rpothin"
 
       - name: Azure login (OIDC)
@@ -602,5 +675,12 @@ jobs:
           ORG_GRADLE_PROJECT_sdkVersion: ${{ env.SDK_VERSION }}
         run: |
           pulumi stack init ${{ matrix.resource }} --non-interactive
+          if [ "${{ matrix.resource }}" = "get-data-records" ]; then
+            if [ -z "$POWERPLATFORM_TEST_ENVIRONMENT_ID" ]; then
+              echo "Skipping get-data-records preview: POWERPLATFORM_TEST_ENVIRONMENT_ID secret not configured"
+              exit 0
+            fi
+            pulumi config set preview-java:environmentId "$POWERPLATFORM_TEST_ENVIRONMENT_ID"
+          fi
           pulumi preview --non-interactive --stack ${{ matrix.resource }}
 
