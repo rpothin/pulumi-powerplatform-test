@@ -1,0 +1,8 @@
+config:
+  preview-go:resource: res-deployment-pipeline
+  # Optional: pipeline host environment and dev/test environment overrides.
+  # When unset, dummy GUIDs are used (preview may not fully succeed live without
+  # real environment IDs — see README's "Known limitations" section).
+  # preview-go:hostEnvironmentId: 00000000-0000-0000-0000-000000000000
+  # preview-go:devEnvironmentId: 00000000-0000-0000-0000-000000000000
+  # preview-go:testEnvironmentId: 00000000-0000-0000-0000-000000000000

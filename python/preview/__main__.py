@@ -118,5 +118,96 @@ elif resource == "get-data-records":
     env_id = config.get("environmentId") or _DUMMY_ENV_ID
     result = pp.get_data_records(environment_id=env_id, entity_collection="accounts")
     pulumi.export("records", result.records)
+# --- AVM-aligned component resources (powerplatform:components:*) ---
+elif resource == "res-environment":
+    r = pp.components.ResEnvironment(
+        "preview",
+        pp.components.ResEnvironmentArgs(
+            display_name=config.get("displayName") or "Preview Component Test",
+            location=config.require("location"),
+            environment_type=config.get("environmentType") or "Sandbox",
+        ),
+    )
+    pulumi.export("resourceId", r.resource_id)
+    pulumi.export("environmentUrl", r.environment_url)
+    pulumi.export("environmentDisplayName", r.environment_display_name)
+    pulumi.export("dataverseOrganizationId", r.dataverse_organization_id)
+    pulumi.export("managedEnvironmentId", r.managed_environment_id)
+elif resource == "res-dlp-policy":
+    r = pp.components.ResDlpPolicy(
+        "preview",
+        pp.components.ResDlpPolicyArgs(
+            display_name=config.get("displayName") or "Preview Component DLP Policy",
+            rule_sets=[
+                {
+                    "classification": "Business",
+                    "connectors": [
+                        {"id": "/providers/Microsoft.PowerApps/apis/shared_office365"},
+                    ],
+                },
+            ],
+        ),
+    )
+    pulumi.export("resourceId", r.resource_id)
+    pulumi.export("policyName", r.policy_name)
+    pulumi.export("ruleSetCount", r.rule_set_count)
+    pulumi.export("tenantId", r.tenant_id)
+    pulumi.export("lastModified", r.last_modified)
+elif resource == "res-tenant-settings":
+    r = pp.components.ResTenantSettings(
+        "preview",
+        pp.components.ResTenantSettingsArgs(
+            walk_me_opt_out=True,
+        ),
+    )
+    pulumi.export("resourceId", r.resource_id)
+    pulumi.export("tenantId", r.tenant_id)
+elif resource == "res-deployment-pipeline":
+    host_environment_id = config.get("hostEnvironmentId") or _DUMMY_ENV_ID
+    dev_environment_id = config.get("devEnvironmentId") or _DUMMY_ENV_ID
+    test_environment_id = config.get("testEnvironmentId") or _DUMMY_ENV_ID
+    r = pp.components.ResDeploymentPipeline(
+        "preview",
+        pp.components.ResDeploymentPipelineArgs(
+            host_environment_id=host_environment_id,
+            pipeline_name=config.get("pipelineName") or "PreviewComponentPipeline",
+            pipeline_description="Pipeline created by the SDK preview test harness",
+            dev_environment_key="dev",
+            environments={
+                "dev": pp.components.PipelineEnvironmentEntryArgs(
+                    id=dev_environment_id,
+                    name="Development",
+                ),
+                "test": pp.components.PipelineEnvironmentEntryArgs(
+                    id=test_environment_id,
+                    name="Test",
+                ),
+            },
+            pipeline_stages=[
+                pp.components.PipelineStageConfigArgs(
+                    environment_key="test",
+                    description="Promote to test",
+                ),
+            ],
+        ),
+    )
+    pulumi.export("resourceId", r.resource_id)
+    pulumi.export("pipelineId", r.pipeline_id)
+    pulumi.export("pipelineTeamId", r.pipeline_team_id)
+    pulumi.export("deploymentEnvironmentIds", r.deployment_environment_ids)
+    pulumi.export("deploymentStageIds", r.deployment_stage_ids)
+# --- New invoke functions ---
+elif resource == "get-dlp-policies":
+    result = pp.get_dlp_policies()
+    pulumi.export("policies", result.policies)
+elif resource == "get-dlp-policy-migration-config":
+    source_policy_id = config.require("sourcePolicyId")
+    result = pp.get_dlp_policy_migration_config(source_policy_id=source_policy_id)
+    pulumi.export("displayName", result.display_name)
+    pulumi.export("ruleSetCount", len(result.rule_sets or []))
+elif resource == "get-security-roles":
+    env_id = config.get("environmentId") or _DUMMY_ENV_ID
+    result = pp.get_security_roles(environment_id=env_id)
+    pulumi.export("securityRoles", result.security_roles)
 else:
     raise ValueError(f"Unknown resource: {resource}")

@@ -4,6 +4,7 @@ import (
 "fmt"
 
 pp "github.com/rpothin/pulumi-powerplatform/sdk/go/powerplatform"
+ppcomponents "github.com/rpothin/pulumi-powerplatform/sdk/go/powerplatform/components"
 "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 "github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 )
@@ -200,6 +201,132 @@ if err != nil {
 return err
 }
 ctx.Export("count", pulumi.Int(len(result.Records)))
+
+// --- AVM-aligned component resources (powerplatform:components:*) ---
+case "res-environment":
+displayName := cfg.Get("displayName")
+if displayName == "" {
+displayName = "Preview Component Test"
+}
+environmentType := cfg.Get("environmentType")
+if environmentType == "" {
+environmentType = "Sandbox"
+}
+r, err := ppcomponents.NewResEnvironment(ctx, "preview", &ppcomponents.ResEnvironmentArgs{
+DisplayName:     displayName,
+Location:        cfg.Require("location"),
+EnvironmentType: &environmentType,
+})
+if err != nil {
+return err
+}
+ctx.Export("resourceId", r.ResourceId)
+ctx.Export("environmentUrl", r.EnvironmentUrl)
+ctx.Export("environmentDisplayName", r.EnvironmentDisplayName)
+ctx.Export("dataverseOrganizationId", r.DataverseOrganizationId)
+ctx.Export("managedEnvironmentId", r.ManagedEnvironmentId)
+
+case "res-dlp-policy":
+dlpDisplayName := cfg.Get("displayName")
+if dlpDisplayName == "" {
+dlpDisplayName = "Preview Component DLP Policy"
+}
+ruleSets := []interface{}{
+map[string]interface{}{
+"classification": "Business",
+"connectors": []interface{}{
+map[string]interface{}{"id": "/providers/Microsoft.PowerApps/apis/shared_office365"},
+},
+},
+}
+rDlp, err := ppcomponents.NewResDlpPolicy(ctx, "preview", &ppcomponents.ResDlpPolicyArgs{
+DisplayName: dlpDisplayName,
+RuleSets:    ruleSets,
+})
+if err != nil {
+return err
+}
+ctx.Export("resourceId", rDlp.ResourceId)
+ctx.Export("policyName", rDlp.PolicyName)
+ctx.Export("ruleSetCount", rDlp.RuleSetCount)
+ctx.Export("tenantId", rDlp.TenantId)
+ctx.Export("lastModified", rDlp.LastModified)
+
+case "res-tenant-settings":
+walkMeOptOut := true
+rTenant, err := ppcomponents.NewResTenantSettings(ctx, "preview", &ppcomponents.ResTenantSettingsArgs{
+WalkMeOptOut: &walkMeOptOut,
+})
+if err != nil {
+return err
+}
+ctx.Export("resourceId", rTenant.ResourceId)
+ctx.Export("tenantId", rTenant.TenantId)
+
+case "res-deployment-pipeline":
+hostEnvironmentId := cfg.Get("hostEnvironmentId")
+if hostEnvironmentId == "" {
+hostEnvironmentId = dummyUUID
+}
+devEnvironmentId := cfg.Get("devEnvironmentId")
+if devEnvironmentId == "" {
+devEnvironmentId = dummyUUID
+}
+testEnvironmentId := cfg.Get("testEnvironmentId")
+if testEnvironmentId == "" {
+testEnvironmentId = dummyUUID
+}
+pipelineName := cfg.Get("pipelineName")
+if pipelineName == "" {
+pipelineName = "PreviewComponentPipeline"
+}
+rPipeline, err := ppcomponents.NewResDeploymentPipeline(ctx, "preview", &ppcomponents.ResDeploymentPipelineArgs{
+HostEnvironmentId:   hostEnvironmentId,
+PipelineName:        pipelineName,
+PipelineDescription: pulumi.StringRef("Pipeline created by the SDK preview test harness"),
+DevEnvironmentKey:   "dev",
+Environments: map[string]ppcomponents.PipelineEnvironmentEntryInput{
+"dev":  ppcomponents.PipelineEnvironmentEntryArgs{Id: devEnvironmentId, Name: "Development"},
+"test": ppcomponents.PipelineEnvironmentEntryArgs{Id: testEnvironmentId, Name: "Test"},
+},
+PipelineStages: []ppcomponents.PipelineStageConfigInput{
+ppcomponents.PipelineStageConfigArgs{EnvironmentKey: "test", Description: pulumi.StringRef("Promote to test")},
+},
+})
+if err != nil {
+return err
+}
+ctx.Export("resourceId", rPipeline.ResourceId)
+ctx.Export("pipelineId", rPipeline.PipelineId)
+ctx.Export("pipelineTeamId", rPipeline.PipelineTeamId)
+ctx.Export("deploymentEnvironmentIds", rPipeline.DeploymentEnvironmentIds)
+ctx.Export("deploymentStageIds", rPipeline.DeploymentStageIds)
+
+// --- New invoke functions ---
+case "get-dlp-policies":
+result, err := pp.GetDlpPolicies(ctx, &pp.GetDlpPoliciesArgs{}, nil)
+if err != nil {
+return err
+}
+ctx.Export("count", pulumi.Int(len(result.Policies)))
+
+case "get-dlp-policy-migration-config":
+sourcePolicyId := cfg.Require("sourcePolicyId")
+result, err := pp.GetDlpPolicyMigrationConfig(ctx, &pp.GetDlpPolicyMigrationConfigArgs{SourcePolicyId: sourcePolicyId}, nil)
+if err != nil {
+return err
+}
+ctx.Export("displayName", pulumi.String(result.DisplayName))
+ctx.Export("ruleSetCount", pulumi.Int(len(result.RuleSets)))
+
+case "get-security-roles":
+envIdRoles := cfg.Get("environmentId")
+if envIdRoles == "" { envIdRoles = dummyUUID }
+result, err := pp.GetSecurityRoles(ctx, &pp.GetSecurityRolesArgs{EnvironmentId: envIdRoles}, nil)
+if err != nil {
+return err
+}
+ctx.Export("count", pulumi.Int(len(result.SecurityRoles)))
 
 default:
 return fmt.Errorf("unknown resource: %s", resource)
