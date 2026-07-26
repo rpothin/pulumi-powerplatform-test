@@ -21,7 +21,17 @@ Integration tests for the published [pulumi-powerplatform](https://github.com/rp
 └── .github/workflows/test-sdks.yaml
 ```
 
-Each directory contains a minimal Pulumi program that creates a single `Environment` resource.
+Each directory contains a Pulumi program that dispatches on a `resource` stack config
+value (one `Pulumi.<resource>.yaml` stack config per case) to exercise a single
+resource or invoke function per `pulumi preview` run — this is how the same program
+covers ~20 different resources/functions across the CI matrix.
+
+This includes the four AVM-aligned component resources under the
+`powerplatform:components:*` module (`ResEnvironment`, `ResDlpPolicy`,
+`ResTenantSettings`, `ResDeploymentPipeline`) and the `getDlpPolicies`,
+`getDlpPolicyMigrationConfig`, and `getSecurityRoles` invoke functions, added in
+[pulumi-powerplatform#73](https://github.com/rpothin/pulumi-powerplatform/pull/73)
+(v0.4.0/v0.4.1).
 
 ## Running tests
 
@@ -83,3 +93,7 @@ The E2E job runs automatically as part of the workflow whenever credentials are 
 - **No real deployments** — The `python`, `typescript`, `dotnet`, `go`, and `java` jobs only install, compile, and optionally preview. They never run `pulumi up`.
 - **Go SDK** — Requires v0.1.17+. A `go.mod` was added to the upstream provider's `sdk/go/powerplatform/` directory in [pulumi-powerplatform#26](https://github.com/rpothin/pulumi-powerplatform/pull/26), making the module resolvable on the Go module proxy from that release onward.
 - **Preview** — Only runs when `AZURE_CLIENT_ID` and `AZURE_TENANT_ID` are configured as repository **secrets** (Settings → Secrets and variables → Actions → Repository secrets). Authentication uses OIDC (no client secret required) — the Azure AD app registration must have a federated credential trusting the GitHub Actions OIDC issuer for this repository.
+- **Optional environment/policy-scoped secrets** — A few resource cases need a real, pre-existing entity ID to preview meaningfully; when the corresponding secret isn't configured, those cases are skipped (exit 0) rather than failing the job:
+  - `POWERPLATFORM_TEST_ENVIRONMENT_ID` — a Dataverse environment ID, used by `get-connectors`, `get-apps`, `get-flows`, `get-data-records`, and `get-security-roles`.
+  - `POWERPLATFORM_TEST_DLP_POLICY_ID` — an existing DLP policy ID, used by `get-dlp-policy-migration-config` to read migration configuration from a real policy.
+- **`res-deployment-pipeline`** — This component composes several linked `DataRecord` instances (pipeline, stages, team) and a `PipelineSharing` link to a dev environment. Without real host/dev/test environment IDs it previews against dummy GUIDs, following the same precedent as `data-record` and `environment-application-admin`; live preview may not fully succeed without configuring `preview-<lang>:hostEnvironmentId`/`devEnvironmentId`/`testEnvironmentId` in the relevant stack config.

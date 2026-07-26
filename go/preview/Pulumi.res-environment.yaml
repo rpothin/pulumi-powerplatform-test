@@ -1,0 +1,3 @@
+config:
+  preview-go:resource: res-environment
+  preview-go:location: unitedstates

@@ -1,0 +1,4 @@
+config:
+  preview-dotnet:resource: get-dlp-policy-migration-config
+  # Set at runtime from the POWERPLATFORM_TEST_DLP_POLICY_ID secret (see README).
+  # preview-dotnet:sourcePolicyId: 00000000-0000-0000-0000-000000000000

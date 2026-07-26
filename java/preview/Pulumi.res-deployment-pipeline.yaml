@@ -1,0 +1,8 @@
+config:
+  preview-java:resource: res-deployment-pipeline
+  # Optional: pipeline host environment and dev/test environment overrides.
+  # When unset, dummy GUIDs are used (preview may not fully succeed live without
+  # real environment IDs — see README's "Known limitations" section).
+  # preview-java:hostEnvironmentId: 00000000-0000-0000-0000-000000000000
+  # preview-java:devEnvironmentId: 00000000-0000-0000-0000-000000000000
+  # preview-java:testEnvironmentId: 00000000-0000-0000-0000-000000000000

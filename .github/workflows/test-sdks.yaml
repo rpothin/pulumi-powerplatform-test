@@ -48,6 +48,7 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
       POWERPLATFORM_TEST_ENVIRONMENT_ID: ${{ secrets.POWERPLATFORM_TEST_ENVIRONMENT_ID }}
+      POWERPLATFORM_TEST_DLP_POLICY_ID: ${{ secrets.POWERPLATFORM_TEST_DLP_POLICY_ID }}
     defaults:
       run:
         working-directory: python/preview
@@ -73,6 +74,13 @@ jobs:
           - get-apps
           - get-flows
           - get-data-records
+          - res-environment
+          - res-dlp-policy
+          - res-tenant-settings
+          - res-deployment-pipeline
+          - get-dlp-policies
+          - get-dlp-policy-migration-config
+          - get-security-roles
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -128,12 +136,19 @@ jobs:
         run: |
           set -o pipefail
           pulumi stack init ${{ matrix.resource }} --non-interactive
-          if [[ "${{ matrix.resource }}" =~ ^(get-connectors|get-apps|get-flows|get-data-records)$ ]]; then
+          if [[ "${{ matrix.resource }}" =~ ^(get-connectors|get-apps|get-flows|get-data-records|get-security-roles)$ ]]; then
             if [ -z "$POWERPLATFORM_TEST_ENVIRONMENT_ID" ]; then
               echo "Skipping env-scoped preview: POWERPLATFORM_TEST_ENVIRONMENT_ID secret not configured"
               exit 0
             fi
             pulumi config set preview-python:environmentId "$POWERPLATFORM_TEST_ENVIRONMENT_ID"
+          fi
+          if [[ "${{ matrix.resource }}" == "get-dlp-policy-migration-config" ]]; then
+            if [ -z "$POWERPLATFORM_TEST_DLP_POLICY_ID" ]; then
+              echo "Skipping DLP migration config preview: POWERPLATFORM_TEST_DLP_POLICY_ID secret not configured"
+              exit 0
+            fi
+            pulumi config set preview-python:sourcePolicyId "$POWERPLATFORM_TEST_DLP_POLICY_ID"
           fi
           pulumi preview --non-interactive --stack ${{ matrix.resource }} --logtostderr -v=9 2>&1 | tail -200
 
@@ -296,6 +311,7 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
       POWERPLATFORM_TEST_ENVIRONMENT_ID: ${{ secrets.POWERPLATFORM_TEST_ENVIRONMENT_ID }}
+      POWERPLATFORM_TEST_DLP_POLICY_ID: ${{ secrets.POWERPLATFORM_TEST_DLP_POLICY_ID }}
     defaults:
       run:
         working-directory: typescript/preview
@@ -321,6 +337,13 @@ jobs:
           - get-apps
           - get-flows
           - get-data-records
+          - res-environment
+          - res-dlp-policy
+          - res-tenant-settings
+          - res-deployment-pipeline
+          - get-dlp-policies
+          - get-dlp-policy-migration-config
+          - get-security-roles
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -381,12 +404,19 @@ jobs:
         run: |
           set -o pipefail
           pulumi stack init ${{ matrix.resource }} --non-interactive
-          if [[ "${{ matrix.resource }}" =~ ^(get-connectors|get-apps|get-flows|get-data-records)$ ]]; then
+          if [[ "${{ matrix.resource }}" =~ ^(get-connectors|get-apps|get-flows|get-data-records|get-security-roles)$ ]]; then
             if [ -z "$POWERPLATFORM_TEST_ENVIRONMENT_ID" ]; then
               echo "Skipping env-scoped preview: POWERPLATFORM_TEST_ENVIRONMENT_ID secret not configured"
               exit 0
             fi
             pulumi config set preview-typescript:environmentId "$POWERPLATFORM_TEST_ENVIRONMENT_ID"
+          fi
+          if [[ "${{ matrix.resource }}" == "get-dlp-policy-migration-config" ]]; then
+            if [ -z "$POWERPLATFORM_TEST_DLP_POLICY_ID" ]; then
+              echo "Skipping DLP migration config preview: POWERPLATFORM_TEST_DLP_POLICY_ID secret not configured"
+              exit 0
+            fi
+            pulumi config set preview-typescript:sourcePolicyId "$POWERPLATFORM_TEST_DLP_POLICY_ID"
           fi
           pulumi preview --non-interactive --stack ${{ matrix.resource }} --logtostderr -v=9 2>&1 | tail -200
 
@@ -402,6 +432,7 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
       POWERPLATFORM_TEST_ENVIRONMENT_ID: ${{ secrets.POWERPLATFORM_TEST_ENVIRONMENT_ID }}
+      POWERPLATFORM_TEST_DLP_POLICY_ID: ${{ secrets.POWERPLATFORM_TEST_DLP_POLICY_ID }}
     defaults:
       run:
         working-directory: dotnet/preview
@@ -427,6 +458,13 @@ jobs:
           - get-apps
           - get-flows
           - get-data-records
+          - res-environment
+          - res-dlp-policy
+          - res-tenant-settings
+          - res-deployment-pipeline
+          - get-dlp-policies
+          - get-dlp-policy-migration-config
+          - get-security-roles
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -505,12 +543,19 @@ jobs:
         if: env.AZURE_CLIENT_ID != ''
         run: |
           pulumi stack init ${{ matrix.resource }} --non-interactive
-          if [[ "${{ matrix.resource }}" =~ ^(get-connectors|get-apps|get-flows|get-data-records)$ ]]; then
+          if [[ "${{ matrix.resource }}" =~ ^(get-connectors|get-apps|get-flows|get-data-records|get-security-roles)$ ]]; then
             if [ -z "$POWERPLATFORM_TEST_ENVIRONMENT_ID" ]; then
               echo "Skipping env-scoped preview: POWERPLATFORM_TEST_ENVIRONMENT_ID secret not configured"
               exit 0
             fi
             pulumi config set preview-dotnet:environmentId "$POWERPLATFORM_TEST_ENVIRONMENT_ID"
+          fi
+          if [[ "${{ matrix.resource }}" == "get-dlp-policy-migration-config" ]]; then
+            if [ -z "$POWERPLATFORM_TEST_DLP_POLICY_ID" ]; then
+              echo "Skipping DLP migration config preview: POWERPLATFORM_TEST_DLP_POLICY_ID secret not configured"
+              exit 0
+            fi
+            pulumi config set preview-dotnet:sourcePolicyId "$POWERPLATFORM_TEST_DLP_POLICY_ID"
           fi
           pulumi preview --non-interactive --stack ${{ matrix.resource }}
 
@@ -526,6 +571,7 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
       POWERPLATFORM_TEST_ENVIRONMENT_ID: ${{ secrets.POWERPLATFORM_TEST_ENVIRONMENT_ID }}
+      POWERPLATFORM_TEST_DLP_POLICY_ID: ${{ secrets.POWERPLATFORM_TEST_DLP_POLICY_ID }}
     defaults:
       run:
         working-directory: go/preview
@@ -551,6 +597,13 @@ jobs:
           - get-apps
           - get-flows
           - get-data-records
+          - res-environment
+          - res-dlp-policy
+          - res-tenant-settings
+          - res-deployment-pipeline
+          - get-dlp-policies
+          - get-dlp-policy-migration-config
+          - get-security-roles
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -611,12 +664,19 @@ jobs:
         if: env.AZURE_CLIENT_ID != ''
         run: |
           pulumi stack init ${{ matrix.resource }} --non-interactive
-          if [[ "${{ matrix.resource }}" =~ ^(get-connectors|get-apps|get-flows|get-data-records)$ ]]; then
+          if [[ "${{ matrix.resource }}" =~ ^(get-connectors|get-apps|get-flows|get-data-records|get-security-roles)$ ]]; then
             if [ -z "$POWERPLATFORM_TEST_ENVIRONMENT_ID" ]; then
               echo "Skipping env-scoped preview: POWERPLATFORM_TEST_ENVIRONMENT_ID secret not configured"
               exit 0
             fi
             pulumi config set preview-go:environmentId "$POWERPLATFORM_TEST_ENVIRONMENT_ID"
+          fi
+          if [[ "${{ matrix.resource }}" == "get-dlp-policy-migration-config" ]]; then
+            if [ -z "$POWERPLATFORM_TEST_DLP_POLICY_ID" ]; then
+              echo "Skipping DLP migration config preview: POWERPLATFORM_TEST_DLP_POLICY_ID secret not configured"
+              exit 0
+            fi
+            pulumi config set preview-go:sourcePolicyId "$POWERPLATFORM_TEST_DLP_POLICY_ID"
           fi
           pulumi preview --non-interactive --stack ${{ matrix.resource }}
 
@@ -632,6 +692,7 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       SDK_VERSION: ${{ needs.resolve-version.outputs.sdk_version }}
       POWERPLATFORM_TEST_ENVIRONMENT_ID: ${{ secrets.POWERPLATFORM_TEST_ENVIRONMENT_ID }}
+      POWERPLATFORM_TEST_DLP_POLICY_ID: ${{ secrets.POWERPLATFORM_TEST_DLP_POLICY_ID }}
     defaults:
       run:
         working-directory: java/preview
@@ -657,6 +718,13 @@ jobs:
           - get-apps
           - get-flows
           - get-data-records
+          - res-environment
+          - res-dlp-policy
+          - res-tenant-settings
+          - res-deployment-pipeline
+          - get-dlp-policies
+          - get-dlp-policy-migration-config
+          - get-security-roles
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -735,12 +803,19 @@ jobs:
           ORG_GRADLE_PROJECT_sdkVersion: ${{ env.SDK_VERSION }}
         run: |
           pulumi stack init ${{ matrix.resource }} --non-interactive
-          if [[ "${{ matrix.resource }}" =~ ^(get-connectors|get-apps|get-flows|get-data-records)$ ]]; then
+          if [[ "${{ matrix.resource }}" =~ ^(get-connectors|get-apps|get-flows|get-data-records|get-security-roles)$ ]]; then
             if [ -z "$POWERPLATFORM_TEST_ENVIRONMENT_ID" ]; then
               echo "Skipping env-scoped preview: POWERPLATFORM_TEST_ENVIRONMENT_ID secret not configured"
               exit 0
             fi
             pulumi config set preview-java:environmentId "$POWERPLATFORM_TEST_ENVIRONMENT_ID"
+          fi
+          if [[ "${{ matrix.resource }}" == "get-dlp-policy-migration-config" ]]; then
+            if [ -z "$POWERPLATFORM_TEST_DLP_POLICY_ID" ]; then
+              echo "Skipping DLP migration config preview: POWERPLATFORM_TEST_DLP_POLICY_ID secret not configured"
+              exit 0
+            fi
+            pulumi config set preview-java:sourcePolicyId "$POWERPLATFORM_TEST_DLP_POLICY_ID"
           fi
           pulumi preview --non-interactive --stack ${{ matrix.resource }}
 

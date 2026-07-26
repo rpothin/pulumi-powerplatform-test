@@ -143,6 +143,88 @@ switch (resource) {
         outputs["records"] = result.records;
         break;
     }
+    // --- AVM-aligned component resources (powerplatform:components:*) ---
+    case "res-environment": {
+        const r = new pp.components.ResEnvironment("preview", {
+            displayName: config.get("displayName") ?? "Preview Component Test",
+            location: config.require("location"),
+            environmentType: config.get("environmentType") ?? "Sandbox",
+        });
+        outputs["resourceId"] = r.resourceId;
+        outputs["environmentUrl"] = r.environmentUrl;
+        outputs["environmentDisplayName"] = r.environmentDisplayName;
+        outputs["dataverseOrganizationId"] = r.dataverseOrganizationId;
+        outputs["managedEnvironmentId"] = r.managedEnvironmentId;
+        break;
+    }
+    case "res-dlp-policy": {
+        const r = new pp.components.ResDlpPolicy("preview", {
+            displayName: config.get("displayName") ?? "Preview Component DLP Policy",
+            ruleSets: [
+                {
+                    classification: "Business",
+                    connectors: [
+                        { id: "/providers/Microsoft.PowerApps/apis/shared_office365" },
+                    ],
+                },
+            ],
+        });
+        outputs["resourceId"] = r.resourceId;
+        outputs["policyName"] = r.policyName;
+        outputs["ruleSetCount"] = r.ruleSetCount;
+        outputs["tenantId"] = r.tenantId;
+        outputs["lastModified"] = r.lastModified;
+        break;
+    }
+    case "res-tenant-settings": {
+        const r = new pp.components.ResTenantSettings("preview", {
+            walkMeOptOut: true,
+        });
+        outputs["resourceId"] = r.resourceId;
+        outputs["tenantId"] = r.tenantId;
+        break;
+    }
+    case "res-deployment-pipeline": {
+        const hostEnvironmentId = config.get("hostEnvironmentId") ?? DUMMY_ENV_ID;
+        const devEnvironmentId = config.get("devEnvironmentId") ?? DUMMY_ENV_ID;
+        const testEnvironmentId = config.get("testEnvironmentId") ?? DUMMY_ENV_ID;
+        const r = new pp.components.ResDeploymentPipeline("preview", {
+            hostEnvironmentId: hostEnvironmentId,
+            pipelineName: config.get("pipelineName") ?? "PreviewComponentPipeline",
+            pipelineDescription: "Pipeline created by the SDK preview test harness",
+            devEnvironmentKey: "dev",
+            environments: {
+                dev: { id: devEnvironmentId, name: "Development" },
+                test: { id: testEnvironmentId, name: "Test" },
+            },
+            pipelineStages: [
+                { environmentKey: "test", description: "Promote to test" },
+            ],
+        });
+        outputs["resourceId"] = r.resourceId;
+        outputs["pipelineId"] = r.pipelineId;
+        outputs["pipelineTeamId"] = r.pipelineTeamId;
+        outputs["deploymentEnvironmentIds"] = r.deploymentEnvironmentIds;
+        outputs["deploymentStageIds"] = r.deploymentStageIds;
+        break;
+    }
+    // --- New invoke functions ---
+    case "get-dlp-policies": {
+        const result = pp.getDlpPoliciesOutput({});
+        outputs["policies"] = result.policies;
+        break;
+    }
+    case "get-dlp-policy-migration-config": {
+        const result = pp.getDlpPolicyMigrationConfigOutput({ sourcePolicyId: config.require("sourcePolicyId") });
+        outputs["displayName"] = result.displayName;
+        outputs["ruleSetCount"] = result.ruleSets.apply(rs => (rs ?? []).length);
+        break;
+    }
+    case "get-security-roles": {
+        const result = pp.getSecurityRolesOutput({ environmentId: config.get("environmentId") ?? DUMMY_ENV_ID });
+        outputs["securityRoles"] = result.securityRoles;
+        break;
+    }
     default:
         throw new Error(`Unknown resource: ${resource}`);
 }

@@ -1,0 +1,3 @@
+config:
+  preview-python:resource: res-environment
+  preview-python:location: unitedstates

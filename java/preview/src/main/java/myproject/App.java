@@ -30,11 +30,26 @@ import io.github.rpothin.powerplatform.RoleAssignment;
 import io.github.rpothin.powerplatform.RoleAssignmentArgs;
 import io.github.rpothin.powerplatform.TenantSettings;
 import io.github.rpothin.powerplatform.TenantSettingsArgs;
+import io.github.rpothin.powerplatform.components.ResDeploymentPipeline;
+import io.github.rpothin.powerplatform.components.ResDeploymentPipelineArgs;
+import io.github.rpothin.powerplatform.components.ResDlpPolicy;
+import io.github.rpothin.powerplatform.components.ResDlpPolicyArgs;
+import io.github.rpothin.powerplatform.components.ResEnvironment;
+import io.github.rpothin.powerplatform.components.ResEnvironmentArgs;
+import io.github.rpothin.powerplatform.components.ResTenantSettings;
+import io.github.rpothin.powerplatform.components.ResTenantSettingsArgs;
+import io.github.rpothin.powerplatform.components.inputs.PipelineEnvironmentEntryArgs;
+import io.github.rpothin.powerplatform.components.inputs.PipelineStageConfigArgs;
 import io.github.rpothin.powerplatform.inputs.GetAppsArgs;
 import io.github.rpothin.powerplatform.inputs.GetConnectorsArgs;
 import io.github.rpothin.powerplatform.inputs.GetDataRecordsArgs;
+import io.github.rpothin.powerplatform.inputs.GetDlpPoliciesArgs;
+import io.github.rpothin.powerplatform.inputs.GetDlpPolicyMigrationConfigArgs;
 import io.github.rpothin.powerplatform.inputs.GetEnvironmentsArgs;
 import io.github.rpothin.powerplatform.inputs.GetFlowsArgs;
+import io.github.rpothin.powerplatform.inputs.GetSecurityRolesArgs;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class App {
     private static final String DUMMY_UUID = "00000000-0000-0000-0000-000000000000";
@@ -184,6 +199,93 @@ public class App {
                         .entityCollection("accounts")
                         .build());
                     ctx.export("count", result.applyValue(r -> r.records().size()));
+                    break;
+                }
+
+                // --- AVM-aligned component resources (powerplatform:components:*) ---
+                case "res-environment": {
+                    var r = new ResEnvironment("preview", ResEnvironmentArgs.builder()
+                        .displayName(config.get("displayName").orElse("Preview Component Test"))
+                        .location(config.require("location"))
+                        .environmentType(config.get("environmentType").orElse("Sandbox"))
+                        .build());
+                    ctx.export("resourceId", r.resourceId());
+                    ctx.export("environmentUrl", r.environmentUrl());
+                    ctx.export("environmentDisplayName", r.environmentDisplayName());
+                    ctx.export("dataverseOrganizationId", r.dataverseOrganizationId());
+                    ctx.export("managedEnvironmentId", r.managedEnvironmentId());
+                    break;
+                }
+                case "res-dlp-policy": {
+                    Map<String, Object> connector = new LinkedHashMap<>();
+                    connector.put("id", "/providers/Microsoft.PowerApps/apis/shared_office365");
+                    Map<String, Object> ruleSet = new LinkedHashMap<>();
+                    ruleSet.put("classification", "Business");
+                    ruleSet.put("connectors", java.util.List.of(connector));
+                    var r = new ResDlpPolicy("preview", ResDlpPolicyArgs.builder()
+                        .displayName(config.get("displayName").orElse("Preview Component DLP Policy"))
+                        .ruleSets(ruleSet)
+                        .build());
+                    ctx.export("resourceId", r.resourceId());
+                    ctx.export("policyName", r.policyName());
+                    ctx.export("ruleSetCount", r.ruleSetCount());
+                    ctx.export("tenantId", r.tenantId());
+                    ctx.export("lastModified", r.lastModified());
+                    break;
+                }
+                case "res-tenant-settings": {
+                    var r = new ResTenantSettings("preview", ResTenantSettingsArgs.builder()
+                        .walkMeOptOut(true)
+                        .build());
+                    ctx.export("resourceId", r.resourceId());
+                    ctx.export("tenantId", r.tenantId());
+                    break;
+                }
+                case "res-deployment-pipeline": {
+                    var hostEnvironmentId = config.get("hostEnvironmentId").orElse(DUMMY_UUID);
+                    var devEnvironmentId = config.get("devEnvironmentId").orElse(DUMMY_UUID);
+                    var testEnvironmentId = config.get("testEnvironmentId").orElse(DUMMY_UUID);
+                    Map<String, PipelineEnvironmentEntryArgs> environments = new LinkedHashMap<>();
+                    environments.put("dev", PipelineEnvironmentEntryArgs.builder().id(devEnvironmentId).name("Development").build());
+                    environments.put("test", PipelineEnvironmentEntryArgs.builder().id(testEnvironmentId).name("Test").build());
+                    var r = new ResDeploymentPipeline("preview", ResDeploymentPipelineArgs.builder()
+                        .hostEnvironmentId(hostEnvironmentId)
+                        .pipelineName(config.get("pipelineName").orElse("PreviewComponentPipeline"))
+                        .pipelineDescription("Pipeline created by the SDK preview test harness")
+                        .devEnvironmentKey("dev")
+                        .environments(environments)
+                        .pipelineStages(PipelineStageConfigArgs.builder()
+                            .environmentKey("test")
+                            .description("Promote to test")
+                            .build())
+                        .build());
+                    ctx.export("resourceId", r.resourceId());
+                    ctx.export("pipelineId", r.pipelineId());
+                    ctx.export("pipelineTeamId", r.pipelineTeamId());
+                    ctx.export("deploymentEnvironmentIds", r.deploymentEnvironmentIds());
+                    ctx.export("deploymentStageIds", r.deploymentStageIds());
+                    break;
+                }
+
+                // --- New invoke functions ---
+                case "get-dlp-policies": {
+                    var result = PowerplatformFunctions.getDlpPolicies(GetDlpPoliciesArgs.builder().build());
+                    ctx.export("count", result.applyValue(r -> r.policies().size()));
+                    break;
+                }
+                case "get-dlp-policy-migration-config": {
+                    var result = PowerplatformFunctions.getDlpPolicyMigrationConfig(GetDlpPolicyMigrationConfigArgs.builder()
+                        .sourcePolicyId(config.require("sourcePolicyId"))
+                        .build());
+                    ctx.export("displayName", result.applyValue(r -> r.displayName()));
+                    ctx.export("ruleSetCount", result.applyValue(r -> r.ruleSets().size()));
+                    break;
+                }
+                case "get-security-roles": {
+                    var result = PowerplatformFunctions.getSecurityRoles(GetSecurityRolesArgs.builder()
+                        .environmentId(config.get("environmentId").orElse(DUMMY_UUID))
+                        .build());
+                    ctx.export("count", result.applyValue(r -> r.securityRoles().size()));
                     break;
                 }
                 default:
